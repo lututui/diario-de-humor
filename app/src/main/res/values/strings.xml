@@ -1,3 +1,43 @@
 <resources>
     <string name="app_name">Diario de Humor</string>
+    <string name="cadastro_registro_humor_titulo">Novo Registro de Humor</string>
+    <string name="titulo_momento">Título do Momento</string>
+    <string name="prompt_sentimento">Como você está se sentindo?</string>
+    <string name="sentimento_1">😞 Muito Ruim</string>
+    <string name="sentimento_2">😕 Ruim</string>
+    <string name="sentimento_3">😐 Neutro</string>
+    <string name="sentimento_4">🙂 Bem</string>
+    <string name="sentimento_5">😄 Muito Bem</string>
+    <string name="periodo_dia">Período do dia</string>
+    <string name="momento_especial_prompt">Marcar este momento como especial</string>
+    <string name="momento_especial_explicacao">Momentos especiais são registros que você considera marcantes: uma conquista, um dia muito difícil, ou qualquer situação que queira encontrar facilmente depois no seu histórico</string>
+    <string name="anotacoes">Anotações</string>
+    <string name="salvar">Salvar</string>
+    <string name="limpar">Limpar</string>
+    <string name="registrar_humor">Registrar humor</string>
+    <string name="erro_sem_titulo">Adicione um título ao registro!</string>
+    <string name="periodo_unset">Selecione…</string>
+    <string name="periodo_manha">Manhã</string>
+    <string name="periodo_tarde">Tarde</string>
+    <string name="periodo_noite">Noite</string>
+    <string name="periodo_madrugada">Madrugada</string>
+    <string name="erro_sem_periodo">Selecione um período do dia!</string>
+    <string name="erro_sem_sentimento">Selecione como está se sentindo!</string>
+    <string name="momento_especial_q">Momento especial?</string>
+    <string name="cadastro_limpo">Cadastro limpo</string>
+    <string name="sim">Sim</string>
+    <string name="nao">Não</string>
+    <string name="data">Data</string>
+    <string name="formato_data">dd/MM/yyyy</string>
+    <string name="erro_data_invalida">Data inválida!</string>
+
+
+    <string-array name="periodo_dia_array">
+        <item>@string/periodo_unset</item>
+        <item>@string/periodo_manha</item>
+        <item>@string/periodo_tarde</item>
+        <item>@string/periodo_noite</item>
+        <item>@string/periodo_madrugada</item>
+    </string-array>
+
 </resources>
