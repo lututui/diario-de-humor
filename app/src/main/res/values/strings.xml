@@ -30,6 +30,9 @@
     <string name="data">Data</string>
     <string name="formato_data">dd/MM/yyyy</string>
     <string name="erro_data_invalida">Data inválida!</string>
+    <string name="placeholder">placeholder</string>
+    <string name="especial_emoji">⭐</string>
+    <string name="quando">Quando?</string>
 
 
     <string-array name="periodo_dia_array">

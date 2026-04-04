@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="titulos">
+        <item>Manhã produtiva</item>
+        <item>Reunião difícil</item>
+        <item>Passeio com amigos</item>
+        <item>Noite de insônia</item>
+        <item>Treino concluído</item>
+        <item>Notícia ruim</item>
+        <item>Jantar em família</item>
+        <item>Dia sem graça</item>
+        <item>Promoção no trabalho</item>
+        <item>Dor de cabeça o dia todo</item>
+    </string-array>
+    
+    <integer-array name="sentimentos">
+        <item>4</item>
+        <item>1</item>
+        <item>4</item>
+        <item>0</item>
+        <item>3</item>
+        <item>0</item>
+        <item>3</item>
+        <item>2</item>
+        <item>4</item>
+        <item>1</item>
+    </integer-array>
+    
+    <integer-array name="periodo">
+        <item>0</item>
+        <item>1</item>
+        <item>1</item>
+        <item>3</item>
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>1</item>
+        <item>0</item>
+        <item>2</item>
+    </integer-array>
+
+    <integer-array name="especial">
+        <item>0</item>
+        <item>0</item>
+        <item>1</item>
+        <item>0</item>
+        <item>0</item>
+        <item>1</item>
+        <item>1</item>
+        <item>0</item>
+        <item>1</item>
+        <item>0</item>
+    </integer-array>
+
+    <string-array name="datas">
+        <item>01/03/2026</item>
+        <item>05/03/2026</item>
+        <item>08/03/2026</item>
+        <item>12/03/2026</item>
+        <item>15/03/2026</item>
+        <item>18/03/2026</item>
+        <item>22/03/2026</item>
+        <item>25/03/2026</item>
+        <item>28/03/2026</item>
+        <item>01/04/2026</item>
+    </string-array>
+    
+    <string-array name="anotacoes">
+        <item>Consegui terminar todas as tarefas</item>
+        <item />
+        <item>Ri bastante</item>
+        <item />
+        <item />
+        <item>Noticia ruim sobre familiar</item>
+        <item />
+        <item />
+        <item>Muito bom ser reconhecido</item>
+        <item />
+    </string-array>
+    
+</resources>
