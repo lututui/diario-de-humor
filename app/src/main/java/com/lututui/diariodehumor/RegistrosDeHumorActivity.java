@@ -1,10 +1,15 @@
 package com.lututui.diariodehumor;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -16,8 +21,10 @@ import java.util.List;
 public class RegistrosDeHumorActivity extends AppCompatActivity {
     private RecyclerView rvRegistrosDeHumor;
     private RecyclerView.LayoutManager rvLayoutManager;
-    private RegistroHumorRecyclerViewAdapter rgRecyclerViewAdapater;
+    private RegistroHumorRecyclerViewAdapter rgRecyclerViewAdapter;
     private RegistroHumorRecyclerViewAdapter.OnItemClickListener onItemClickListener;
+
+    private ActivityResultLauncher<Intent> launcherNovoRegistro;
 
     private List<RegistroDeHumor> registros;
 
@@ -64,15 +71,61 @@ public class RegistrosDeHumorActivity extends AppCompatActivity {
             }
         };
 
-        popularExemplos();
+        registros = new ArrayList<>();
 
-        rgRecyclerViewAdapater = new RegistroHumorRecyclerViewAdapter(
+        // popularExemplos();
+
+        rgRecyclerViewAdapter = new RegistroHumorRecyclerViewAdapter(
                 this,
                 registros,
                 onItemClickListener
         );
 
-        rvRegistrosDeHumor.setAdapter(rgRecyclerViewAdapater);
+        rvRegistrosDeHumor.setAdapter(rgRecyclerViewAdapter);
+
+        launcherNovoRegistro = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(), result -> {
+                    if (result.getResultCode() != RegistrosDeHumorActivity.RESULT_OK) return;
+
+                    var intent = result.getData();
+
+                    if (intent == null) return;
+
+                    var bundle = intent.getExtras();
+
+                    if (bundle == null) return;
+
+                    var titulo = bundle.getString(CadastroRegistroHumorActivity.KEY_TITULO);
+                    var data = bundle.getString(CadastroRegistroHumorActivity.KEY_DATA);
+                    var periodo = PeriodoDia.values()[bundle.getInt(CadastroRegistroHumorActivity.KEY_PERIODO)];
+                    var sentimento = Sentimento.values()[bundle.getInt(CadastroRegistroHumorActivity.KEY_SENTIMENTO)];
+                    var especial = bundle.getBoolean(CadastroRegistroHumorActivity.KEY_ESPECIAL);
+                    var anotacoes = bundle.getString(CadastroRegistroHumorActivity.KEY_ANOTACOES);
+
+                    var rgHumor = new RegistroDeHumor(
+                            titulo,
+                            data,
+                            periodo,
+                            sentimento,
+                            especial,
+                            anotacoes
+                    );
+
+                    registros.add(rgHumor);
+
+                    rgRecyclerViewAdapter.notifyDataSetChanged();
+                }
+        );
+    }
+
+    public void abrirSobre(View view) {
+        var intent = new Intent(this, AutoriaActivity.class);
+        startActivity(intent);
+    }
+
+    public void abrirRegistrarHumor(View view) {
+        var intent = new Intent(this, CadastroRegistroHumorActivity.class);
+        launcherNovoRegistro.launch(intent);
     }
 
     private void popularExemplos() {
@@ -82,8 +135,6 @@ public class RegistrosDeHumorActivity extends AppCompatActivity {
         int[] momentosEspeciais = getResources().getIntArray(R.array.especial);
         String[] datas = getResources().getStringArray(R.array.datas);
         String[] anotacoes = getResources().getStringArray(R.array.anotacoes);
-
-        registros = new ArrayList<>();
 
         for (int i = 0; i < titulos.length; i++) {
             var periodo = PeriodoDia.values()[periodos[i]];

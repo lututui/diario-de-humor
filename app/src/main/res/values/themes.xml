@@ -1,9 +1,24 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.DiarioDeHumor" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.DiarioDeHumor" parent="Theme.Material3.Light">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowTranslucentStatus">true</item>
+
+        <item name="colorPrimary">@color/reddish_magenta</item>
+        <item name="colorPrimaryVariant">@color/pastel_light_lilac</item>
+        <item name="colorSecondary">@color/matte_rouge</item>
+        <item name="colorTertiary">@color/authentic_teal</item>
+
+        <item name="toolbarStyle">@style/LightToolbar</item>
     </style>
 
     <style name="Theme.DiarioDeHumor" parent="Base.Theme.DiarioDeHumor" />
+    
+    <style name="LightToolbar" parent="Widget.Material3.Toolbar">
+        <item name="android:background">@color/reddish_magenta</item>
+        <item name="titleTextColor">@color/white</item>
+    </style>
 </resources>

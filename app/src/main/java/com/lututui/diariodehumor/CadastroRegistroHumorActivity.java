@@ -1,8 +1,10 @@
 package com.lututui.diariodehumor;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -20,13 +22,22 @@ import java.util.Locale;
 import java.util.Optional;
 
 public class CadastroRegistroHumorActivity extends AppCompatActivity {
-    private EditText nomeMomentoWidget, anotacoesWidget, dataWidget;
+    private EditText nomeMomentoWidget;
+    private EditText anotacoesWidget;
+    private EditText dataWidget;
     private Spinner periodoDiaWidget;
     private RadioGroup sentimentosWidget;
     private CheckBox momentoEspecialWidget;
 
     private Calendar calendar;
     private SimpleDateFormat formatoData;
+
+    public static final String KEY_TITULO = "KEY_TITULO";
+    public static final String KEY_DATA = "KEY_DATA";
+    public static final String KEY_PERIODO = "KEY_PERIODO";
+    public static final String KEY_SENTIMENTO = "KEY_SENTIMENTO";
+    public static final String KEY_ESPECIAL = "KEY_ESPECIAL";
+    public static final String KEY_ANOTACOES = "KEY_ANOTACOES";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -66,10 +77,9 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
     }
 
     public void salvar(View view) {
-        var nomeMomento = Optional
-                .ofNullable(nomeMomentoWidget.getText())
-                .map(o -> o.toString().trim())
-                .orElse("");
+        var nomeMomento = Optional.ofNullable(nomeMomentoWidget.getText())
+                                  .map(o -> o.toString().trim())
+                                  .orElse("");
 
         if (nomeMomento.isBlank()) {
             Toast.makeText(this, R.string.erro_sem_titulo, Toast.LENGTH_LONG).show();
@@ -77,31 +87,30 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
             return;
         }
 
-        var periodo = (String) periodoDiaWidget.getSelectedItem();
+        var periodoId = periodoDiaWidget.getSelectedItemPosition();
 
-        if (periodo == null || periodo.equals(getString(R.string.periodo_unset))) {
+        if (periodoId == AdapterView.INVALID_POSITION || periodoId == 0) {
             Toast.makeText(this, R.string.erro_sem_periodo, Toast.LENGTH_LONG).show();
             return;
         }
 
-        var sentimentoId = sentimentosWidget.getCheckedRadioButtonId();
+        var rdButtonId = sentimentosWidget.getCheckedRadioButtonId();
 
-        if (sentimentoId == -1) {
+        if (rdButtonId == -1) {
             Toast.makeText(this, R.string.erro_sem_sentimento, Toast.LENGTH_LONG).show();
             return;
         }
 
-        var sentimentoText = ((RadioButton) findViewById(sentimentoId)).getText();
+        var sentimentoId = sentimentosWidget.indexOfChild(sentimentosWidget.findViewById(rdButtonId));
 
         var momentoEspecial = momentoEspecialWidget.isChecked();
-        var anotacoes = Optional
-                .ofNullable(anotacoesWidget.getText())
-                .map(o -> o.toString().trim())
-                .orElse("");
+        var anotacoes = Optional.ofNullable(anotacoesWidget.getText())
+                                .map(o -> o.toString().trim())
+                                .orElse("");
 
-        var data = Optional
-                .ofNullable(dataWidget.getText())
-                .map(o -> o.toString().trim()).orElse("");
+        var data = Optional.ofNullable(dataWidget.getText())
+                           .map(o -> o.toString().trim())
+                           .orElse("");
 
         if (!dataValida(data)) {
             Toast.makeText(this, R.string.erro_data_invalida, Toast.LENGTH_LONG).show();
@@ -110,16 +119,17 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
             return;
         }
 
+        var intent = new Intent();
 
-        Toast.makeText(this,
-                getString(R.string.titulo_momento) + ": " + nomeMomento + "\n" +
-                        getString(R.string.data) + ": " + data + "\n" +
-                        getString(R.string.periodo_dia) + ": " + periodo + "\n" +
-                        getString(R.string.prompt_sentimento) + " " + sentimentoText + "\n" +
-                        getString(R.string.momento_especial_q) + " " +
-                        (momentoEspecial ? getString(R.string.sim) : getString(R.string.nao)) + "\n" +
-                        getString(R.string.anotacoes) + ": " + anotacoes,
-                Toast.LENGTH_LONG).show();
+        intent.putExtra(KEY_TITULO, nomeMomento);
+        intent.putExtra(KEY_DATA, data);
+        intent.putExtra(KEY_PERIODO, periodoId - 1);
+        intent.putExtra(KEY_SENTIMENTO, sentimentoId);
+        intent.putExtra(KEY_ESPECIAL, momentoEspecial);
+        intent.putExtra(KEY_ANOTACOES, anotacoes);
+
+        setResult(RESULT_OK, intent);
+        finish();
     }
 
     public void limpar(View view) {

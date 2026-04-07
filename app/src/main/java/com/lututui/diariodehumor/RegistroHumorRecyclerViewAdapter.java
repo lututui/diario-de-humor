@@ -1,9 +1,13 @@
 package com.lututui.diariodehumor;
 
+import static com.google.android.material.R.attr.colorPrimaryVariant;
+
 import android.content.Context;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -40,7 +44,11 @@ public class RegistroHumorRecyclerViewAdapter
         if (rg_humor.isEspecial()) {
             holder.estrelaEsquerda.setVisibility(View.VISIBLE);
             holder.estrelaDireita.setVisibility(View.VISIBLE);
-            holder.itemView.setBackgroundColor(0xffffe2fe);
+
+            var typedVal = new TypedValue();
+            context.getTheme().resolveAttribute(colorPrimaryVariant, typedVal, true);
+
+            holder.itemView.setBackgroundColor(typedVal.data);
         }
 
         holder.titulo.setText(rg_humor.getTitulo());

@@ -2,4 +2,20 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Nomes das cores: https://www.color-name.com/ -->
+
+    <!-- Light -->
+    <color name="reddish_magenta">#ff950039</color>
+    <color name="matte_rouge">#ffc5808c</color>
+    <color name="authentic_teal">#ff005b4b</color>
+    <color name="pastel_light_lilac">#ffffe2fe</color>
+    
+    <!-- Dark -->
+    <color name="cute_lilac">#ffffccff</color>
+    <color name="blackcurrant">#ff4a2a52</color>
+    <color name="red_onion">#ff8c4a55</color>
+    <color name="niagara">#ff00a884</color>
+
+
 </resources>

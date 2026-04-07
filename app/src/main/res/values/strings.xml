@@ -33,6 +33,16 @@
     <string name="placeholder">placeholder</string>
     <string name="especial_emoji">⭐</string>
     <string name="quando">Quando?</string>
+    <string name="autoria">Autoria</string>
+    <string name="autor">Luiz Arthur Chagas Oliveira</string>
+    <string name="curso">Engenharia de Computação</string>
+    <string name="email">luizarthur@alunos.utfpr.edu.br</string>
+    <string name="descricao_app">Diário emocional para registrar estados de humor ao longo dos dias, para ajudar o usuário a desenvolver autoconsciência emocional.</string>
+    <string name="app_logo_content_description">Logo do App</string>
+    <string name="utfpr_logo_content_description">Logo da UTFPR</string>
+    <string name="utfpr_extenso">Universidade Tecnológica Federal do Paraná (UTFPR)</string>
+    <string name="adicionar">Adicionar</string>
+    <string name="sobre">Sobre</string>
 
 
     <string-array name="periodo_dia_array">

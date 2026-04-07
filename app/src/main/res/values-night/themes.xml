@@ -1,7 +1,21 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.DiarioDeHumor" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.DiarioDeHumor" parent="Theme.Material3.Dark">
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowTranslucentStatus">true</item>
+
+        <item name="colorPrimary">@color/cute_lilac</item>
+        <item name="colorPrimaryVariant">@color/blackcurrant</item>
+        <item name="colorSecondary">@color/red_onion</item>
+        <item name="colorTertiary">@color/niagara</item>
+
+        <item name="toolbarStyle">@style/DarkToolbar</item>
+    </style>
+
+    <style name="DarkToolbar" parent="Widget.Material3.Toolbar">
+        <item name="android:background">@color/cute_lilac</item>
+        <item name="titleTextColor">@color/black</item>
     </style>
 </resources>

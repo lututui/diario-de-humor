@@ -1,11 +1,12 @@
 package com.lututui.diariodehumor;
 
 public enum Sentimento {
-    MUITO_RUIM(R.string.sentimento_1),
-    RUIM(R.string.sentimento_2),
-    NEUTRO(R.string.sentimento_3),
+    MUITO_BEM(R.string.sentimento_5),
     BEM(R.string.sentimento_4),
-    MUITO_BEM(R.string.sentimento_5);
+    NEUTRO(R.string.sentimento_3),
+    RUIM(R.string.sentimento_2),
+    MUITO_RUIM(R.string.sentimento_1);
+
 
     private final int resourceID;
 
