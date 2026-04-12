@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AutoriaActivity">
+    tools:context=".activity.SobreActivity">
 
     <TextView
         android:id="@+id/label_autoria"

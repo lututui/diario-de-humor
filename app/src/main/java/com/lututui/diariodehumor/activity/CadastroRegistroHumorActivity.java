@@ -1,27 +1,38 @@
-package com.lututui.diariodehumor;
+package com.lututui.diariodehumor.activity;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.lututui.diariodehumor.PeriodoDia;
+import com.lututui.diariodehumor.R;
+import com.lututui.diariodehumor.RegistroDeHumor;
+import com.lututui.diariodehumor.Sentimento;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Optional;
 
 public class CadastroRegistroHumorActivity extends AppCompatActivity {
+    public static final String MODO_KEY = "MODO_KEY";
+
     private EditText nomeMomentoWidget;
     private EditText anotacoesWidget;
     private EditText dataWidget;
@@ -32,12 +43,7 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
     private Calendar calendar;
     private SimpleDateFormat formatoData;
 
-    public static final String KEY_TITULO = "KEY_TITULO";
-    public static final String KEY_DATA = "KEY_DATA";
-    public static final String KEY_PERIODO = "KEY_PERIODO";
-    public static final String KEY_SENTIMENTO = "KEY_SENTIMENTO";
-    public static final String KEY_ESPECIAL = "KEY_ESPECIAL";
-    public static final String KEY_ANOTACOES = "KEY_ANOTACOES";
+    private boolean editando;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,15 +55,33 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
         nomeMomentoWidget = findViewById(R.id.text_momento);
         anotacoesWidget = findViewById(R.id.text_anotacoes);
         dataWidget = findViewById(R.id.text_data);
-
         periodoDiaWidget = findViewById(R.id.spinner_periodo);
-
         sentimentosWidget = findViewById(R.id.rg_sentimento);
-
         momentoEspecialWidget = findViewById(R.id.checkbox_especial);
 
         formatoData = new SimpleDateFormat(getString(R.string.formato_data), Locale.ROOT);
 
+        editando = getIntent().getBooleanExtra(MODO_KEY, false);
+
+        if (editando) {
+            var rgHumor = (RegistroDeHumor) getIntent().getParcelableExtra(RegistroDeHumor.REGISTRO_DE_HUMOR_KEY);
+
+            if (rgHumor != null) {
+                var tituloWidget = (TextView) findViewById(R.id.label_titulo);
+                tituloWidget.setText(getString(R.string.editando_registro_de_humor));
+
+                var data = Optional.ofNullable(dataTryParse(rgHumor.getData()))
+                                   .orElse(Calendar.getInstance().getTime());
+
+                nomeMomentoWidget.setText(rgHumor.getTitulo());
+                calendar.setTime(data);
+                periodoDiaWidget.setSelection(rgHumor.getPeriodoDia().ordinal() + 1);
+                sentimentosWidget.check(sentimentosWidget.getChildAt(rgHumor.getSentimento().ordinal())
+                                                         .getId());
+                momentoEspecialWidget.setChecked(rgHumor.isEspecial());
+                anotacoesWidget.setText(rgHumor.getAnotacoes());
+            }
+        }
 
         setDataWidget();
     }
@@ -66,20 +90,17 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
         dataWidget.setText(formatoData.format(calendar.getTime()));
     }
 
-    private boolean dataValida(String talvezData) {
+    private Date dataTryParse(String talvezData) {
         try {
-            var d = formatoData.parse(talvezData);
-
-            return true;
+            return formatoData.parse(talvezData);
         } catch (ParseException e) {
-            return false;
+            return null;
         }
     }
 
-    public void salvar(View view) {
+    public void salvar() {
         var nomeMomento = Optional.ofNullable(nomeMomentoWidget.getText())
-                                  .map(o -> o.toString().trim())
-                                  .orElse("");
+                                  .map(o -> o.toString().trim()).orElse("");
 
         if (nomeMomento.isBlank()) {
             Toast.makeText(this, R.string.erro_sem_titulo, Toast.LENGTH_LONG).show();
@@ -104,35 +125,43 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
         var sentimentoId = sentimentosWidget.indexOfChild(sentimentosWidget.findViewById(rdButtonId));
 
         var momentoEspecial = momentoEspecialWidget.isChecked();
-        var anotacoes = Optional.ofNullable(anotacoesWidget.getText())
-                                .map(o -> o.toString().trim())
+        var anotacoes = Optional.ofNullable(anotacoesWidget.getText()).map(o -> o.toString().trim())
                                 .orElse("");
 
-        var data = Optional.ofNullable(dataWidget.getText())
-                           .map(o -> o.toString().trim())
-                           .orElse("");
+        var dataString = Optional.ofNullable(dataWidget.getText()).map(o -> o.toString().trim())
+                                 .orElse("");
 
-        if (!dataValida(data)) {
+        var data = dataTryParse(dataString);
+
+        if (data == null) {
             Toast.makeText(this, R.string.erro_data_invalida, Toast.LENGTH_LONG).show();
             calendar = Calendar.getInstance();
             setDataWidget();
             return;
         }
 
+        var periodo = PeriodoDia.values()[periodoId - 1];
+        var sentimento = Sentimento.values()[sentimentoId];
+
+        var rgHumor = new RegistroDeHumor(
+                nomeMomento,
+                dataString,
+                periodo,
+                sentimento,
+                momentoEspecial,
+                anotacoes
+        );
+
         var intent = new Intent();
 
-        intent.putExtra(KEY_TITULO, nomeMomento);
-        intent.putExtra(KEY_DATA, data);
-        intent.putExtra(KEY_PERIODO, periodoId - 1);
-        intent.putExtra(KEY_SENTIMENTO, sentimentoId);
-        intent.putExtra(KEY_ESPECIAL, momentoEspecial);
-        intent.putExtra(KEY_ANOTACOES, anotacoes);
+        intent.putExtra(MODO_KEY, editando);
+        intent.putExtra(RegistroDeHumor.REGISTRO_DE_HUMOR_KEY, rgHumor);
 
         setResult(RESULT_OK, intent);
         finish();
     }
 
-    public void limpar(View view) {
+    public void limpar() {
         nomeMomentoWidget.setText(null);
         anotacoesWidget.setText(null);
 
@@ -168,5 +197,24 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
         dPickerDialog.show();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.opcoes_cadastro, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        var menuId = item.getItemId();
+
+        if (menuId == R.id.menu_cadastro_limpar) {
+            limpar();
+        } else if (menuId == R.id.menu_cadastro_salvar) {
+            salvar();
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+
+        return true;
+    }
 }

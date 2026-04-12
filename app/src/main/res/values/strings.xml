@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Diario de Humor</string>
-    <string name="cadastro_registro_humor_titulo">Novo Registro de Humor</string>
+    <string name="novo_registro_de_humor">Novo Registro de Humor</string>
     <string name="titulo_momento">Título do Momento</string>
     <string name="prompt_sentimento">Como você está se sentindo?</string>
     <string name="sentimento_1">😞 Muito Ruim</string>
@@ -43,6 +43,9 @@
     <string name="utfpr_extenso">Universidade Tecnológica Federal do Paraná (UTFPR)</string>
     <string name="adicionar">Adicionar</string>
     <string name="sobre">Sobre</string>
+    <string name="editar">Editar</string>
+    <string name="excluir">Excluir</string>
+    <string name="editando_registro_de_humor">Editando Registro de Humor</string>
 
 
     <string-array name="periodo_dia_array">
