@@ -75,6 +75,7 @@ public class RegistrosDeHumorActivity extends AppCompatActivity {
         public void onDestroyActionMode(ActionMode mode) {
             selecionado.getView().setBackground(selecionado.getBackground());
             recyclerView.setEnabled(true);
+            selecionado = null;
             actionMode = null;
         }
     };
