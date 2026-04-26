@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="periodo_dia_array">
+        <item>@string/periodo_unset</item>
+        <item>@string/periodo_manha</item>
+        <item>@string/periodo_tarde</item>
+        <item>@string/periodo_noite</item>
+        <item>@string/periodo_madrugada</item>
+    </string-array>
+
+    <string-array name="esquema_cores_array">
+        <item>@string/sistema</item>
+        <item>@string/claro</item>
+        <item>@string/escuro</item>
+    </string-array>
+
+    <string-array name="ordenacao_array">
+        <item>@string/mais_recentes_primeiro</item>
+        <item>@string/mais_antigos_primeiro</item>
+        <item>@string/melhor_humor_primeiro</item>
+        <item>@string/pior_humor_primeiro</item>
+    </string-array>
+
+    <string-array name="formato_data_array">
+        <item>@string/dia_mes_ano</item>
+        <item>@string/mes_dia_ano</item>
+        <item>@string/ano_mes_dia</item>
+    </string-array>
+</resources>

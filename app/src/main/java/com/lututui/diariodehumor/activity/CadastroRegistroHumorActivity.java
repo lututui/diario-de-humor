@@ -22,12 +22,11 @@ import com.lututui.diariodehumor.PeriodoDia;
 import com.lututui.diariodehumor.R;
 import com.lututui.diariodehumor.RegistroDeHumor;
 import com.lututui.diariodehumor.Sentimento;
+import com.lututui.diariodehumor.Util;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 import java.util.Optional;
 
 public class CadastroRegistroHumorActivity extends AppCompatActivity {
@@ -41,9 +40,10 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
     private CheckBox momentoEspecialWidget;
 
     private Calendar calendar;
-    private SimpleDateFormat formatoData;
 
     private boolean editando;
+
+    private Util.FormatoData modoData;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -59,9 +59,10 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
         sentimentosWidget = findViewById(R.id.rg_sentimento);
         momentoEspecialWidget = findViewById(R.id.checkbox_especial);
 
-        formatoData = new SimpleDateFormat(getString(R.string.formato_data), Locale.ROOT);
-
         editando = getIntent().getBooleanExtra(MODO_KEY, false);
+
+        var sharedPref = getSharedPreferences(Util.SharedPreferences.FILE, MODE_PRIVATE);
+        modoData = Util.FormatoData.values()[sharedPref.getInt(Util.SharedPreferences.SP_DATA, 0)];
 
         if (editando) {
             var rgHumor = (RegistroDeHumor) getIntent().getParcelableExtra(RegistroDeHumor.REGISTRO_DE_HUMOR_KEY);
@@ -70,14 +71,14 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
                 var tituloWidget = (TextView) findViewById(R.id.label_titulo);
                 tituloWidget.setText(getString(R.string.editando_registro_de_humor));
 
-                var data = Optional.ofNullable(dataTryParse(rgHumor.getData()))
+                var data = Optional.ofNullable((rgHumor.getData()))
                                    .orElse(Calendar.getInstance().getTime());
 
                 nomeMomentoWidget.setText(rgHumor.getTitulo());
                 calendar.setTime(data);
                 periodoDiaWidget.setSelection(rgHumor.getPeriodoDia().ordinal() + 1);
-                sentimentosWidget.check(sentimentosWidget.getChildAt(rgHumor.getSentimento().ordinal())
-                                                         .getId());
+                sentimentosWidget.check(sentimentosWidget.getChildAt(rgHumor.getSentimento()
+                                                                            .ordinal()).getId());
                 momentoEspecialWidget.setChecked(rgHumor.isEspecial());
                 anotacoesWidget.setText(rgHumor.getAnotacoes());
             }
@@ -87,15 +88,7 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
     }
 
     private void setDataWidget() {
-        dataWidget.setText(formatoData.format(calendar.getTime()));
-    }
-
-    private Date dataTryParse(String talvezData) {
-        try {
-            return formatoData.parse(talvezData);
-        } catch (ParseException e) {
-            return null;
-        }
+        dataWidget.setText(modoData.toString(calendar.getTime()));
     }
 
     public void salvar() {
@@ -131,7 +124,7 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
         var dataString = Optional.ofNullable(dataWidget.getText()).map(o -> o.toString().trim())
                                  .orElse("");
 
-        var data = dataTryParse(dataString);
+        var data = modoData.toDate(dataString);
 
         if (data == null) {
             Toast.makeText(this, R.string.erro_data_invalida, Toast.LENGTH_LONG).show();
@@ -145,7 +138,7 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
 
         var rgHumor = new RegistroDeHumor(
                 nomeMomento,
-                dataString,
+                data,
                 periodo,
                 sentimento,
                 momentoEspecial,
@@ -184,7 +177,7 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
                 this,
                 (dp_view, year, month, dayOfMonth) -> {
 
-                    calendar.set(year, month - 1, dayOfMonth);
+                    calendar.set(year, month, dayOfMonth);
 
                     setDataWidget();
                 },

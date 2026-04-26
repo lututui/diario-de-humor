@@ -77,8 +77,11 @@ public class RegistroHumorRecyclerViewAdapter
             holder.itemView.setBackgroundColor(typedVal.data);
         }
 
+        var sharedPreferences = context.getSharedPreferences(Util.SharedPreferences.FILE, Context.MODE_PRIVATE);
+        var dataMode = Util.FormatoData.values()[sharedPreferences.getInt(Util.SharedPreferences.SP_DATA, 0)];
+
         holder.titulo.setText(rg_humor.getTitulo());
-        holder.data.setText(rg_humor.getData());
+        holder.data.setText(dataMode.toString(rg_humor.getData()));
         holder.periodo.setText(context.getString(rg_humor.getPeriodoDia().getResourceID()));
         holder.sentimento.setText(context.getString(rg_humor.getSentimento().getResourceID()));
         holder.anotacao.setText(rg_humor.getAnotacoes());

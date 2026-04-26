@@ -12,4 +12,7 @@
         android:id="@+id/menu_listagem_sobre"
         android:checkable="false"
         android:title="@string/sobre" />
+    <item
+        android:id="@+id/menu_listagem_configuracao"
+        android:title="@string/configuracoes" />
 </menu>

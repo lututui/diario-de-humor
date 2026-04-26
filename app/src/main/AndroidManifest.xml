@@ -12,9 +12,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DiarioDeHumor">
         <activity
+            android:name=".activity.ConfiguracoesActivity"
+            android:exported="false"
+            android:parentActivityName=".activity.RegistrosDeHumorActivity" />
+        <activity
             android:name=".activity.SobreActivity"
             android:exported="false"
-            android:parentActivityName=".activity.RegistrosDeHumorActivity"/>
+            android:parentActivityName=".activity.RegistrosDeHumorActivity" />
         <activity
             android:name=".activity.RegistrosDeHumorActivity"
             android:exported="true"
@@ -28,7 +32,7 @@
         <activity
             android:name=".activity.CadastroRegistroHumorActivity"
             android:exported="false"
-            android:parentActivityName=".activity.RegistrosDeHumorActivity"/>
+            android:parentActivityName=".activity.RegistrosDeHumorActivity" />
     </application>
 
 </manifest>

@@ -1,59 +1,61 @@
 <resources>
-    <string name="app_name">Diario de Humor</string>
-    <string name="novo_registro_de_humor">Novo Registro de Humor</string>
-    <string name="titulo_momento">Título do Momento</string>
-    <string name="prompt_sentimento">Como você está se sentindo?</string>
-    <string name="sentimento_1">😞 Muito Ruim</string>
-    <string name="sentimento_2">😕 Ruim</string>
-    <string name="sentimento_3">😐 Neutro</string>
-    <string name="sentimento_4">🙂 Bem</string>
-    <string name="sentimento_5">😄 Muito Bem</string>
-    <string name="periodo_dia">Período do dia</string>
-    <string name="momento_especial_prompt">Marcar este momento como especial</string>
-    <string name="momento_especial_explicacao">Momentos especiais são registros que você considera marcantes: uma conquista, um dia muito difícil, ou qualquer situação que queira encontrar facilmente depois no seu histórico</string>
-    <string name="anotacoes">Anotações</string>
-    <string name="salvar">Salvar</string>
-    <string name="limpar">Limpar</string>
-    <string name="registrar_humor">Registrar humor</string>
-    <string name="erro_sem_titulo">Adicione um título ao registro!</string>
-    <string name="periodo_unset">Selecione…</string>
-    <string name="periodo_manha">Manhã</string>
-    <string name="periodo_tarde">Tarde</string>
-    <string name="periodo_noite">Noite</string>
-    <string name="periodo_madrugada">Madrugada</string>
-    <string name="erro_sem_periodo">Selecione um período do dia!</string>
-    <string name="erro_sem_sentimento">Selecione como está se sentindo!</string>
-    <string name="momento_especial_q">Momento especial?</string>
-    <string name="cadastro_limpo">Cadastro limpo</string>
-    <string name="sim">Sim</string>
-    <string name="nao">Não</string>
-    <string name="data">Data</string>
-    <string name="formato_data">dd/MM/yyyy</string>
-    <string name="erro_data_invalida">Data inválida!</string>
-    <string name="placeholder">placeholder</string>
-    <string name="especial_emoji">⭐</string>
-    <string name="quando">Quando?</string>
-    <string name="autoria">Autoria</string>
-    <string name="autor">Luiz Arthur Chagas Oliveira</string>
-    <string name="curso">Engenharia de Computação</string>
-    <string name="email">luizarthur@alunos.utfpr.edu.br</string>
-    <string name="descricao_app">Diário emocional para registrar estados de humor ao longo dos dias, para ajudar o usuário a desenvolver autoconsciência emocional.</string>
-    <string name="app_logo_content_description">Logo do App</string>
-    <string name="utfpr_logo_content_description">Logo da UTFPR</string>
-    <string name="utfpr_extenso">Universidade Tecnológica Federal do Paraná (UTFPR)</string>
-    <string name="adicionar">Adicionar</string>
-    <string name="sobre">Sobre</string>
-    <string name="editar">Editar</string>
-    <string name="excluir">Excluir</string>
-    <string name="editando_registro_de_humor">Editando Registro de Humor</string>
-
-
-    <string-array name="periodo_dia_array">
-        <item>@string/periodo_unset</item>
-        <item>@string/periodo_manha</item>
-        <item>@string/periodo_tarde</item>
-        <item>@string/periodo_noite</item>
-        <item>@string/periodo_madrugada</item>
-    </string-array>
-
+    <string name="app_name">Mood Diary</string>
+    <string name="novo_registro_de_humor">New Mood Entry</string>
+    <string name="titulo_momento">Moment Title</string>
+    <string name="prompt_sentimento">How are you feeling?</string>
+    <string name="sentimento_1">😞 Very Bad Mood</string>
+    <string name="sentimento_2">😕 Bad Mood</string>
+    <string name="sentimento_3">😐 Average Mood</string>
+    <string name="sentimento_4">🙂 Good Mood</string>
+    <string name="sentimento_5">😄 Very Good Mood</string>
+    <string name="periodo_dia">Time of day</string>
+    <string name="momento_especial_prompt">Mark as special moment</string>
+    <string name="momento_especial_explicacao">Special moments are moments you consider memorable: an achievement, a really tough day, or any situation you want to be able to find easily later in your history</string>
+    <string name="anotacoes">Notes</string>
+    <string name="salvar">Save</string>
+    <string name="limpar">Clear</string>
+    <string name="erro_sem_titulo">Add an entry title!</string>
+    <string name="periodo_unset">Select...</string>
+    <string name="periodo_manha">Morning</string>
+    <string name="periodo_tarde">Afternoon</string>
+    <string name="periodo_noite">Night</string>
+    <string name="periodo_madrugada">Before Dawn</string>
+    <string name="erro_sem_periodo">Select a time of day!</string>
+    <string name="erro_sem_sentimento">Select your mood!</string>
+    <string name="momento_especial_q">Special moment?</string>
+    <string name="cadastro_limpo">Entry cleared</string>
+    <string name="sim">Yes</string>
+    <string name="nao">No</string>
+    <string name="data">Date</string>
+    <string name="erro_data_invalida">Invalid date!</string>
+    <string name="placeholder" translatable="false">placeholder</string>
+    <string name="especial_emoji" translatable="false">⭐</string>
+    <string name="email" translatable="false">luizarthur@alunos.utfpr.edu.br</string>
+    <string name="ordenacao">Sorting</string>
+    <string name="escuro">Dark</string>
+    <string name="sistema">System</string>
+    <string name="mais_recentes_primeiro">Newest first</string>
+    <string name="mais_antigos_primeiro">Oldest first</string>
+    <string name="melhor_humor_primeiro">Best mood first</string>
+    <string name="pior_humor_primeiro">Worst mood first</string>
+    <string name="formato_de_data">Date format</string>
+    <string name="dia_mes_ano">day/month/year</string>
+    <string name="mes_dia_ano">month/day/year</string>
+    <string name="ano_mes_dia">year/month/day</string>
+    <string name="quando">When?</string>
+    <string name="autoria">Made by</string>
+    <string name="autor" translatable="false">Luiz Arthur Chagas Oliveira</string>
+    <string name="curso">Computer Engineering</string>
+    <string name="descricao_app">An emotional journal for tracking your moods day by day, to help develop emotional self-awareness.</string>
+    <string name="app_logo_content_description">App Logo</string>
+    <string name="utfpr_logo_content_description">UTFPR Logo</string>
+    <string name="utfpr_extenso" translatable="false">Universidade Tecnológica Federal do Paraná (UTFPR)</string>
+    <string name="adicionar">Add</string>
+    <string name="sobre">About</string>
+    <string name="editar">Edit</string>
+    <string name="excluir">Delete</string>
+    <string name="editando_registro_de_humor">Editing Mood Entry</string>
+    <string name="configuracoes">Settings</string>
+    <string name="esquema_de_cores">Color Scheme</string>
+    <string name="claro">Light</string>
 </resources>

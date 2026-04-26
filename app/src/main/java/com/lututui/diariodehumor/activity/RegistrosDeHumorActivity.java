@@ -1,8 +1,8 @@
 package com.lututui.diariodehumor.activity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,6 +13,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.view.ActionMode;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -24,25 +25,33 @@ import com.lututui.diariodehumor.R;
 import com.lututui.diariodehumor.RegistroDeHumor;
 import com.lututui.diariodehumor.RegistroHumorRecyclerViewAdapter;
 import com.lututui.diariodehumor.Sentimento;
+import com.lututui.diariodehumor.SortedArrayList;
+import com.lututui.diariodehumor.Util;
 import com.lututui.diariodehumor.ViewSelecionada;
 
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 public class RegistrosDeHumorActivity extends AppCompatActivity {
     private final boolean DEBUG_POPULAR_EXEMPLOS = false;
-
+    private final List<Comparator<RegistroDeHumor>> comparators = Arrays.asList(
+            Comparator.comparing(RegistroDeHumor::getData).reversed(),
+            Comparator.comparing(RegistroDeHumor::getData),
+            Comparator.comparing(RegistroDeHumor::getSentimento),
+            Comparator.comparing(RegistroDeHumor::getSentimento).reversed()
+    );
     private RecyclerView recyclerView;
     private RegistroHumorRecyclerViewAdapter recyclerViewAdapter;
-
-    private ActivityResultLauncher<Intent> launcherNovoRegistro;
-
-    private List<RegistroDeHumor> registros;
-
+    private SortedArrayList<RegistroDeHumor> registros;
+    private final ActivityResultLauncher<Intent> launcherConfiguracoes = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+            this::onConfiguracoesResult
+    );
     private ActionMode actionMode;
-
     private ViewSelecionada selecionado;
-
+    private final ActivityResultLauncher<Intent> launcherNovoRegistro = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+            this::onCadastroResult
+    );
     private final ActionMode.Callback actionCallback = new ActionMode.Callback() {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
@@ -80,10 +89,24 @@ public class RegistrosDeHumorActivity extends AppCompatActivity {
         }
     };
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registros_de_humor);
+
+        var sharedPref = getSharedPreferences(Util.SharedPreferences.FILE, MODE_PRIVATE);
+
+        var esquemaCores = sharedPref.getInt(Util.SharedPreferences.SP_CORES, 0);
+
+        if (esquemaCores == 0) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+        } else if (esquemaCores == 1) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
+
 
         recyclerView = findViewById(R.id.rv_registros);
         var layoutManager = new LinearLayoutManager(this);
@@ -92,7 +115,9 @@ public class RegistrosDeHumorActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
 
-        registros = new ArrayList<>();
+        var modoOrdenacao = comparators.get(sharedPref.getInt(Util.SharedPreferences.SP_ORDEM, 0));
+
+        registros = new SortedArrayList<>(modoOrdenacao);
 
         if (DEBUG_POPULAR_EXEMPLOS) popularExemplos();
 
@@ -122,29 +147,14 @@ public class RegistrosDeHumorActivity extends AppCompatActivity {
             }
         };
 
-        var onClickListener = new RegistroHumorRecyclerViewAdapter.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(View view, int position) {
-                if (actionMode == null) return;
-            }
-        };
-
-        recyclerViewAdapter.setOnItemClickListener(onClickListener);
         recyclerViewAdapter.setOnItemLongClickListener(onLongClickListener);
 
         recyclerView.setAdapter(recyclerViewAdapter);
 
-        launcherNovoRegistro = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                this::onActivityResult
-        );
-
         registerForContextMenu(recyclerView);
     }
 
-    public void onActivityResult(ActivityResult result) {
-        // implement mode edit/add
+    public void onCadastroResult(ActivityResult result) {
         if (result.getResultCode() != RegistrosDeHumorActivity.RESULT_OK) return;
 
         var intent = result.getData();
@@ -158,15 +168,32 @@ public class RegistrosDeHumorActivity extends AppCompatActivity {
         var editando = intent.getBooleanExtra(CadastroRegistroHumorActivity.MODO_KEY, false);
 
         if (editando) {
-            registros.set(selecionado.getPosicao(), rgHumor);
-            recyclerViewAdapter.notifyItemChanged(selecionado.getPosicao());
-            actionMode.finish();
-        } else {
-            registros.add(rgHumor);
-            recyclerViewAdapter.notifyItemInserted(registros.size() - 1);
+            registros.remove(selecionado.getPosicao());
         }
 
+        var newPos = registros.addSorted(rgHumor);
+
+        if (editando) {
+            recyclerViewAdapter.notifyItemMoved(selecionado.getPosicao(), newPos);
+            recyclerViewAdapter.notifyItemChanged(newPos);
+
+            actionMode.finish();
+        } else {
+            recyclerViewAdapter.notifyItemInserted(newPos);
+        }
+
+        recyclerView.smoothScrollToPosition(newPos);
+
         // recyclerViewAdapter.notifyDataSetChanged();
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    public void onConfiguracoesResult(ActivityResult result) {
+        var sharedPref = getSharedPreferences(Util.SharedPreferences.FILE, MODE_PRIVATE);
+        var sortComp = comparators.get(sharedPref.getInt(Util.SharedPreferences.SP_ORDEM, 0));
+
+        registros.setComparator(sortComp);
+        recyclerViewAdapter.notifyDataSetChanged();
     }
 
     public void abrirSobre() {
@@ -179,6 +206,11 @@ public class RegistrosDeHumorActivity extends AppCompatActivity {
         launcherNovoRegistro.launch(intent);
     }
 
+    public void abrirConfiguracoes() {
+        var intent = new Intent(this, ConfiguracoesActivity.class);
+        launcherConfiguracoes.launch(intent);
+    }
+
     private void excluirRegistroHumor() {
         registros.remove(selecionado.getRegistro());
         recyclerViewAdapter.notifyItemRemoved(selecionado.getPosicao());
@@ -188,10 +220,7 @@ public class RegistrosDeHumorActivity extends AppCompatActivity {
         var intent = new Intent(this, CadastroRegistroHumorActivity.class);
 
         intent.putExtra(CadastroRegistroHumorActivity.MODO_KEY, true);
-        intent.putExtra(
-                RegistroDeHumor.REGISTRO_DE_HUMOR_KEY,
-                selecionado.getRegistro()
-        );
+        intent.putExtra(RegistroDeHumor.REGISTRO_DE_HUMOR_KEY, selecionado.getRegistro());
 
         launcherNovoRegistro.launch(intent);
     }
@@ -209,9 +238,9 @@ public class RegistrosDeHumorActivity extends AppCompatActivity {
             var sentimento = Sentimento.values()[sentimentos[i]];
             var especial = momentosEspeciais[i] == 1;
 
-            registros.add(new RegistroDeHumor(
+            registros.addSorted(new RegistroDeHumor(
                     titulos[i],
-                    datas[i],
+                    Util.FormatoData.DD_MM_YYYY.toDate(datas[i]),
                     periodo,
                     sentimento,
                     especial,
@@ -236,6 +265,8 @@ public class RegistrosDeHumorActivity extends AppCompatActivity {
             abrirRegistrarHumor();
         } else if (menuItemId == R.id.menu_listagem_sobre) {
             abrirSobre();
+        } else if (menuItemId == R.id.menu_listagem_configuracao) {
+            abrirConfiguracoes();
         } else {
             return super.onContextItemSelected(item);
         }
