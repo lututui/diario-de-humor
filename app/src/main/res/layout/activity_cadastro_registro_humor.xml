@@ -188,6 +188,28 @@
             app:layout_constraintTop_toBottomOf="@+id/checkbox_especial" />
 
         <TextView
+            android:id="@+id/label_tags"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="24dp"
+            android:text="@string/tags"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/label_momento_especial" />
+
+        <com.lututui.diariodehumor.tags.TagsView
+            android:id="@+id/tags_view_cadastro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/label_tags" />
+
+        <TextView
             android:id="@+id/label_anotacoes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -196,7 +218,7 @@
             android:text="@string/anotacoes"
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/label_momento_especial" />
+            app:layout_constraintTop_toBottomOf="@id/tags_view_cadastro" />
 
         <EditText
             android:id="@+id/text_anotacoes"

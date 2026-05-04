@@ -3,6 +3,8 @@ package com.lututui.diariodehumor;
 import static com.google.android.material.R.attr.colorPrimaryVariant;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -12,9 +14,13 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.lututui.diariodehumor.tags.TagsView;
+
 import java.util.List;
+import java.util.Optional;
 
 public class RegistroHumorRecyclerViewAdapter
         extends RecyclerView.Adapter<RegistroHumorRecyclerViewAdapter.RegistroHumorHolder> {
@@ -77,14 +83,30 @@ public class RegistroHumorRecyclerViewAdapter
             holder.itemView.setBackgroundColor(typedVal.data);
         }
 
-        var sharedPreferences = context.getSharedPreferences(Util.SharedPreferences.FILE, Context.MODE_PRIVATE);
-        var dataMode = Util.FormatoData.values()[sharedPreferences.getInt(Util.SharedPreferences.SP_DATA, 0)];
+        var sharedPreferences = context.getSharedPreferences(
+                Util.SharedPreferences.FILE,
+                Context.MODE_PRIVATE
+        );
+        var dataMode = Util.FormatoData.values()[sharedPreferences.getInt(
+                Util.SharedPreferences.SP_DATA,
+                0
+        )];
 
         holder.titulo.setText(rg_humor.getTitulo());
         holder.data.setText(dataMode.toString(rg_humor.getData()));
         holder.periodo.setText(context.getString(rg_humor.getPeriodoDia().getResourceID()));
         holder.sentimento.setText(context.getString(rg_humor.getSentimento().getResourceID()));
-        holder.anotacao.setText(rg_humor.getAnotacoes());
+
+        var anotacoes = rg_humor.getAnotacoes();
+
+        if (anotacoes != null && !anotacoes.isBlank()) {
+            holder.anotacao.setText(rg_humor.getAnotacoes());
+            holder.anotacao.setVisibility(View.VISIBLE);
+        } else {
+            holder.anotacao.setVisibility(View.GONE);
+        }
+
+        holder.tags.setTags(rg_humor.getTags());
     }
 
     @Override
@@ -93,7 +115,6 @@ public class RegistroHumorRecyclerViewAdapter
     }
 
     public interface OnItemClickListener {
-
         void onItemClick(View view, int position);
     }
 
@@ -126,6 +147,7 @@ public class RegistroHumorRecyclerViewAdapter
         private final TextView periodo;
         private final TextView sentimento;
         private final TextView anotacao;
+        private final TagsView tags;
 
         public RegistroHumorHolder(@NonNull View itemView) {
             super(itemView);
@@ -138,6 +160,7 @@ public class RegistroHumorRecyclerViewAdapter
             periodo = itemView.findViewById(R.id.text_item_periodo);
             sentimento = itemView.findViewById(R.id.text_item_sentimento);
             anotacao = itemView.findViewById(R.id.text_item_anotacao);
+            tags = itemView.findViewById(R.id.tags_view);
 
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);

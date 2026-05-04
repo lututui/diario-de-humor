@@ -1,8 +1,13 @@
 package com.lututui.diariodehumor.activity;
 
+import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -10,23 +15,27 @@ import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioGroup;
+import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.lututui.diariodehumor.PeriodoDia;
 import com.lututui.diariodehumor.R;
 import com.lututui.diariodehumor.RegistroDeHumor;
 import com.lututui.diariodehumor.Sentimento;
 import com.lututui.diariodehumor.Util;
+import com.lututui.diariodehumor.tags.Tag;
+import com.lututui.diariodehumor.tags.TagsView;
 
-import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Optional;
 
 public class CadastroRegistroHumorActivity extends AppCompatActivity {
@@ -38,6 +47,7 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
     private Spinner periodoDiaWidget;
     private RadioGroup sentimentosWidget;
     private CheckBox momentoEspecialWidget;
+    private TagsView tagsWidget;
 
     private Calendar calendar;
 
@@ -58,11 +68,20 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
         periodoDiaWidget = findViewById(R.id.spinner_periodo);
         sentimentosWidget = findViewById(R.id.rg_sentimento);
         momentoEspecialWidget = findViewById(R.id.checkbox_especial);
+        tagsWidget = findViewById(R.id.tags_view_cadastro);
 
         editando = getIntent().getBooleanExtra(MODO_KEY, false);
 
         var sharedPref = getSharedPreferences(Util.SharedPreferences.FILE, MODE_PRIVATE);
         modoData = Util.FormatoData.values()[sharedPref.getInt(Util.SharedPreferences.SP_DATA, 0)];
+
+        tagsWidget.setClickListener((view, position) -> {
+            if (position == Integer.MIN_VALUE) {
+                mostrarDialogCriarTag();
+            } else {
+                tagsWidget.removeTag(position);
+            }
+        });
 
         if (editando) {
             var rgHumor = (RegistroDeHumor) getIntent().getParcelableExtra(RegistroDeHumor.REGISTRO_DE_HUMOR_KEY);
@@ -81,7 +100,11 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
                                                                             .ordinal()).getId());
                 momentoEspecialWidget.setChecked(rgHumor.isEspecial());
                 anotacoesWidget.setText(rgHumor.getAnotacoes());
+
+                tagsWidget.setTags(rgHumor.getTags(), true);
             }
+        } else {
+            tagsWidget.setTags(new ArrayList<>(), true);
         }
 
         setDataWidget();
@@ -142,7 +165,8 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
                 periodo,
                 sentimento,
                 momentoEspecial,
-                anotacoes
+                anotacoes,
+                tagsWidget.getTags()
         );
 
         var intent = new Intent();
@@ -154,6 +178,7 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
         finish();
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void limpar() {
         nomeMomentoWidget.setText(null);
         anotacoesWidget.setText(null);
@@ -168,6 +193,8 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
 
         calendar = Calendar.getInstance();
         setDataWidget();
+
+        tagsWidget.setTags(new ArrayList<>(), true);
 
         Toast.makeText(this, R.string.cadastro_limpo, Toast.LENGTH_LONG).show();
     }
@@ -209,5 +236,70 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
         }
 
         return true;
+    }
+
+    private void mostrarDialogCriarTag() {
+        mostrarDialogCriarTag(100, 100, 100);
+    }
+
+    private void mostrarDialogCriarTag(int r, int g, int b) {
+        var inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        var dialog = inflater.inflate(R.layout.criador_tag, null, false);
+
+        var seekR = (SeekBar) dialog.findViewById(R.id.seekbar_r);
+        var seekG = (SeekBar) dialog.findViewById(R.id.seekbar_g);
+        var seekB = (SeekBar) dialog.findViewById(R.id.seekbar_b);
+        var preview = dialog.findViewById(R.id.view_preview_cor);
+        var tagNome = (EditText) dialog.findViewById(R.id.text_nome_tag);
+
+        seekR.setProgress(r);
+        seekG.setProgress(g);
+        seekB.setProgress(b);
+
+        var listener = new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                atualizarPreview(seekR, seekG, seekB, preview);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+        };
+
+        seekR.setOnSeekBarChangeListener(listener);
+        seekG.setOnSeekBarChangeListener(listener);
+        seekB.setOnSeekBarChangeListener(listener);
+
+        atualizarPreview(seekR, seekG, seekB, preview);
+
+        new AlertDialog.Builder(this).setTitle(R.string.nova_tag).setView(dialog).setPositiveButton(
+                R.string.adicionar, (d, w) -> {
+                    var nome = tagNome.getText().toString().trim();
+                    if (nome.isEmpty()) return;
+
+                    int cor = Color.rgb(
+                            seekR.getProgress(),
+                            seekG.getProgress(),
+                            seekB.getProgress()
+                    );
+
+                    tagsWidget.addTag(new Tag(nome, cor));
+                }
+        ).setNegativeButton(R.string.cancelar, (d, w) -> d.dismiss()).show();
+    }
+
+    private void atualizarPreview(SeekBar r, SeekBar g, SeekBar b, View preview) {
+        int cor = Color.rgb(r.getProgress(), g.getProgress(), b.getProgress());
+
+        Optional.ofNullable((GradientDrawable) ContextCompat.getDrawable(
+                this,
+                R.drawable.background_tag
+        )).map(GradientDrawable::mutate).ifPresent(d -> {
+            ((GradientDrawable) d).setColor(cor);
+            preview.setBackground(d);
+        });
     }
 }

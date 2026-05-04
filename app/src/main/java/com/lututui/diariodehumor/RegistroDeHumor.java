@@ -5,10 +5,11 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
-import java.text.SimpleDateFormat;
+import com.lututui.diariodehumor.tags.Tag;
+
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Locale;
-import java.util.Objects;
+import java.util.List;
 
 public class RegistroDeHumor implements Parcelable {
     public static final Creator<RegistroDeHumor> CREATOR = new Creator<>() {
@@ -21,7 +22,19 @@ public class RegistroDeHumor implements Parcelable {
             var especial = source.readInt() == 1;
             var anotacoes = source.readString();
 
-            return new RegistroDeHumor(titulo, new Date(data), periodo, sentimento, especial, anotacoes);
+            var tags = new ArrayList<Tag>();
+
+            source.readTypedList(tags, Tag.CREATOR);
+
+            return new RegistroDeHumor(
+                    titulo,
+                    new Date(data),
+                    periodo,
+                    sentimento,
+                    especial,
+                    anotacoes,
+                    tags
+            );
         }
 
         @Override
@@ -36,6 +49,7 @@ public class RegistroDeHumor implements Parcelable {
     private Sentimento sentimento;
     private boolean especial;
     private String anotacoes;
+    private List<Tag> tags;
 
     public RegistroDeHumor(
             String titulo,
@@ -43,7 +57,8 @@ public class RegistroDeHumor implements Parcelable {
             PeriodoDia periodoDia,
             Sentimento sentimento,
             boolean especial,
-            String anotacoes
+            String anotacoes,
+            List<Tag> tags
     ) {
         this.titulo = titulo;
         this.data = data;
@@ -51,6 +66,7 @@ public class RegistroDeHumor implements Parcelable {
         this.sentimento = sentimento;
         this.especial = especial;
         this.anotacoes = anotacoes;
+        this.tags = tags;
     }
 
     public String getTitulo() {
@@ -101,6 +117,14 @@ public class RegistroDeHumor implements Parcelable {
         this.anotacoes = anotacoes;
     }
 
+    public List<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -114,5 +138,7 @@ public class RegistroDeHumor implements Parcelable {
         dest.writeInt(sentimento.ordinal());
         dest.writeInt(especial ? 1 : 0);
         dest.writeString(anotacoes);
+
+        dest.writeTypedList(tags);
     }
 }

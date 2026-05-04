@@ -58,4 +58,14 @@
     <string name="configuracoes">Settings</string>
     <string name="esquema_de_cores">Color Scheme</string>
     <string name="claro">Light</string>
+    <string name="X">X</string>
+    <string name="adicionar_icone">+</string>
+    <string name="tags">Tags</string>
+    <string name="nova_tag">New Tag</string>
+    <string name="r">R</string>
+    <string name="g">G</string>
+    <string name="b">B</string>
+    <string name="tag_name">Tag name</string>
+    <string name="tag_color">Tag color</string>
+    <string name="cancelar">Cancel</string>
 </resources>

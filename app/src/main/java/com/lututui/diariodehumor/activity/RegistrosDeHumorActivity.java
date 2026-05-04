@@ -2,6 +2,7 @@ package com.lututui.diariodehumor.activity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,13 +29,15 @@ import com.lututui.diariodehumor.Sentimento;
 import com.lututui.diariodehumor.SortedArrayList;
 import com.lututui.diariodehumor.Util;
 import com.lututui.diariodehumor.ViewSelecionada;
+import com.lututui.diariodehumor.tags.Tag;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
 public class RegistrosDeHumorActivity extends AppCompatActivity {
-    private final boolean DEBUG_POPULAR_EXEMPLOS = false;
+    private final boolean DEBUG_POPULAR_EXEMPLOS = true;
     private final List<Comparator<RegistroDeHumor>> comparators = Arrays.asList(
             Comparator.comparing(RegistroDeHumor::getData).reversed(),
             Comparator.comparing(RegistroDeHumor::getData),
@@ -112,7 +115,6 @@ public class RegistrosDeHumorActivity extends AppCompatActivity {
         var layoutManager = new LinearLayoutManager(this);
 
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setHasFixedSize(true);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
 
         var modoOrdenacao = comparators.get(sharedPref.getInt(Util.SharedPreferences.SP_ORDEM, 0));
@@ -226,29 +228,40 @@ public class RegistrosDeHumorActivity extends AppCompatActivity {
     }
 
     private void popularExemplos() {
-        String[] titulos = getResources().getStringArray(R.array.titulos);
-        int[] sentimentos = getResources().getIntArray(R.array.sentimentos);
-        int[] periodos = getResources().getIntArray(R.array.periodo);
-        int[] momentosEspeciais = getResources().getIntArray(R.array.especial);
-        String[] datas = getResources().getStringArray(R.array.datas);
-        String[] anotacoes = getResources().getStringArray(R.array.anotacoes);
+        var rsc = getResources();
+
+        String[] titulos = rsc.getStringArray(R.array.titulos);
+        int[] sentimentos = rsc.getIntArray(R.array.sentimentos);
+        int[] periodos = rsc.getIntArray(R.array.periodo);
+        int[] momentosEspeciais = rsc.getIntArray(R.array.especial);
+        String[] datas = rsc.getStringArray(R.array.datas);
+        String[] anotacoes = rsc.getStringArray(R.array.anotacoes);
+        String[] tagsString = rsc.getStringArray(R.array.tags);
 
         for (int i = 0; i < titulos.length; i++) {
             var periodo = PeriodoDia.values()[periodos[i]];
             var sentimento = Sentimento.values()[sentimentos[i]];
             var especial = momentosEspeciais[i] == 1;
 
-            registros.addSorted(new RegistroDeHumor(
+            var partes = tagsString[i].split("\\|");
+            var tags = new ArrayList<Tag>();
+
+            for (int j = 0; j < partes.length; j += 2) {
+                tags.add(new Tag(partes[j], Color.parseColor(partes[j + 1])));
+            }
+
+            var rg = new RegistroDeHumor(
                     titulos[i],
                     Util.FormatoData.DD_MM_YYYY.toDate(datas[i]),
                     periodo,
                     sentimento,
                     especial,
-                    anotacoes[i]
-            ));
+                    anotacoes[i],
+                    tags
+            );
+
+            registros.addSorted(rg);
         }
-
-
     }
 
     @Override
