@@ -1,5 +1,10 @@
 package com.lututui.diariodehumor;
 
+import android.content.Context;
+import android.content.DialogInterface;
+
+import androidx.appcompat.app.AlertDialog;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -40,6 +45,21 @@ public class Util {
         public static final String SP_CORES = "SP_CORES";
         public static final String SP_ORDEM = "SP_ORDEM";
         public static final String SP_DATA = "SP_DATA";
+    }
 
+    public static class Alert {
+        public static void mostrarAviso(Context context, String titulo, String mensagem,
+                                        DialogInterface.OnClickListener listener){
+
+            var builder = new AlertDialog.Builder(context);
+
+            builder.setTitle(titulo);
+            builder.setIcon(android.R.drawable.ic_dialog_info);
+            builder.setMessage(mensagem);
+
+            builder.setNeutralButton(R.string.ok, listener);
+
+            builder.create().show();
+        }
     }
 }

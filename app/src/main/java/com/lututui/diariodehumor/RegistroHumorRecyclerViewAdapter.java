@@ -3,8 +3,6 @@ package com.lututui.diariodehumor;
 import static com.google.android.material.R.attr.colorPrimaryVariant;
 
 import android.content.Context;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -14,13 +12,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.lututui.diariodehumor.tags.TagsView;
 
 import java.util.List;
-import java.util.Optional;
 
 public class RegistroHumorRecyclerViewAdapter
         extends RecyclerView.Adapter<RegistroHumorRecyclerViewAdapter.RegistroHumorHolder> {

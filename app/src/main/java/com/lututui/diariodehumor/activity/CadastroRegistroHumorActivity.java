@@ -1,11 +1,10 @@
 package com.lututui.diariodehumor.activity;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,31 +14,35 @@ import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioGroup;
-import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
+import com.lututui.diariodehumor.DiarioHumorDB;
 import com.lututui.diariodehumor.PeriodoDia;
 import com.lututui.diariodehumor.R;
 import com.lututui.diariodehumor.RegistroDeHumor;
 import com.lututui.diariodehumor.Sentimento;
 import com.lututui.diariodehumor.Util;
 import com.lututui.diariodehumor.tags.Tag;
+import com.lututui.diariodehumor.tags.TagCrossRefRegistroDeHumor;
 import com.lututui.diariodehumor.tags.TagsView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class CadastroRegistroHumorActivity extends AppCompatActivity {
     public static final String MODO_KEY = "MODO_KEY";
+    public static final String ID_KEY = "ID_KEY";
 
     private EditText nomeMomentoWidget;
     private EditText anotacoesWidget;
@@ -50,10 +53,19 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
     private TagsView tagsWidget;
 
     private Calendar calendar;
-
     private boolean editando;
-
     private Util.FormatoData modoData;
+    private RegistroDeHumor registroDeHumorOriginal;
+
+
+    private TagsView dialogTagsSelecionadas;
+    private TagsView dialogTagsDisponiveis;
+
+
+    private ActivityResultLauncher<Intent> launcherCadastroTag = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            this::onCadastroTagResult
+    );
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -77,34 +89,35 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
 
         tagsWidget.setClickListener((view, position) -> {
             if (position == Integer.MIN_VALUE) {
-                mostrarDialogCriarTag();
+                dialogSelecionarTags();
             } else {
                 tagsWidget.removeTag(position);
             }
         });
 
         if (editando) {
-            var rgHumor = (RegistroDeHumor) getIntent().getParcelableExtra(RegistroDeHumor.REGISTRO_DE_HUMOR_KEY);
+            var tituloWidget = (TextView) findViewById(R.id.label_titulo);
+            tituloWidget.setText(getString(R.string.editando_registro_de_humor));
 
-            if (rgHumor != null) {
-                var tituloWidget = (TextView) findViewById(R.id.label_titulo);
-                tituloWidget.setText(getString(R.string.editando_registro_de_humor));
+            var rgId = getIntent().getLongExtra(ID_KEY, -1);
+            var db = DiarioHumorDB.getInstance(this);
 
-                var data = Optional.ofNullable((rgHumor.getData()))
-                                   .orElse(Calendar.getInstance().getTime());
+            registroDeHumorOriginal = db.getRegistroDeHumorDao().getRegistro(rgId);
+        }
 
-                nomeMomentoWidget.setText(rgHumor.getTitulo());
-                calendar.setTime(data);
-                periodoDiaWidget.setSelection(rgHumor.getPeriodoDia().ordinal() + 1);
-                sentimentosWidget.check(sentimentosWidget.getChildAt(rgHumor.getSentimento()
-                                                                            .ordinal()).getId());
-                momentoEspecialWidget.setChecked(rgHumor.isEspecial());
-                anotacoesWidget.setText(rgHumor.getAnotacoes());
+        if (registroDeHumorOriginal != null) {
+            nomeMomentoWidget.setText(registroDeHumorOriginal.getTitulo());
+            calendar.setTime(registroDeHumorOriginal.getData());
+            periodoDiaWidget.setSelection(registroDeHumorOriginal.getPeriodoDia().ordinal() + 1);
+            sentimentosWidget.check(sentimentosWidget.getChildAt(registroDeHumorOriginal.getSentimento()
+                                                                                        .ordinal())
+                                                     .getId());
+            momentoEspecialWidget.setChecked(registroDeHumorOriginal.isEspecial());
+            anotacoesWidget.setText(registroDeHumorOriginal.getAnotacoes());
 
-                tagsWidget.setTags(rgHumor.getTags(), true);
-            }
+            tagsWidget.setTags(registroDeHumorOriginal.getTags(), true, true);
         } else {
-            tagsWidget.setTags(new ArrayList<>(), true);
+            tagsWidget.setTags(new ArrayList<>(), true, true);
         }
 
         setDataWidget();
@@ -169,10 +182,45 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
                 tagsWidget.getTags()
         );
 
+        if (rgHumor.equals(registroDeHumorOriginal)) {
+            setResult(RESULT_CANCELED);
+            finish();
+
+            return;
+        }
+
+        var db = DiarioHumorDB.getInstance(this);
+        var rgDao = db.getRegistroDeHumorDao();
+
+        if (editando) {
+            rgHumor.setId(registroDeHumorOriginal.getId());
+
+            rgDao.update(rgHumor.getEntity());
+            rgDao.removerCrossRef(rgHumor.getId());
+        } else {
+            var novoId = db.getRegistroDeHumorDao().inserir(rgHumor.getEntity());
+
+            rgHumor.setId(novoId);
+        }
+
+        var tagDao = db.getTagDao();
+
+        for (var tag : rgHumor.getTags()) {
+            var tagId = tagDao.inserir(tag);
+
+            if (tagId == -1) {
+                tagId = tagDao.buscarPorNome(tag.getNome()).getId();
+            }
+
+            tag.setId(tagId);
+
+            rgDao.inserirCrossRef(new TagCrossRefRegistroDeHumor(rgHumor.getId(), tagId));
+        }
+
         var intent = new Intent();
 
         intent.putExtra(MODO_KEY, editando);
-        intent.putExtra(RegistroDeHumor.REGISTRO_DE_HUMOR_KEY, rgHumor);
+        intent.putExtra(ID_KEY, rgHumor.getId());
 
         setResult(RESULT_OK, intent);
         finish();
@@ -194,7 +242,7 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
         calendar = Calendar.getInstance();
         setDataWidget();
 
-        tagsWidget.setTags(new ArrayList<>(), true);
+        tagsWidget.setTags(new ArrayList<>(), true, true);
 
         Toast.makeText(this, R.string.cadastro_limpo, Toast.LENGTH_LONG).show();
     }
@@ -238,68 +286,68 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
         return true;
     }
 
-    private void mostrarDialogCriarTag() {
-        mostrarDialogCriarTag(100, 100, 100);
+    public void onCadastroTagResult(ActivityResult result) {
+        if (result.getResultCode() != RESULT_OK) return;
+
+        var intent = result.getData();
+
+        if (intent == null) return;
+
+        var novaTagId = intent.getLongExtra(CadastroTagActivity.ID_KEY, -1);
+
+        var db = DiarioHumorDB.getInstance(this);
+        var dao = db.getTagDao();
+
+        if (novaTagId != -1) {
+            var novaTag = dao.getTag(novaTagId);
+
+            tagsWidget.addTag(novaTag);
+            dialogTagsSelecionadas.addTag(novaTag);
+        }
     }
 
-    private void mostrarDialogCriarTag(int r, int g, int b) {
+    public void dialogSelecionarTags() {
         var inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        var dialog = inflater.inflate(R.layout.criador_tag, null, false);
+        @SuppressLint("InflateParams") var view = inflater.inflate(
+                R.layout.dialog_selecionar_tag,
+                null,
+                false
+        );
 
-        var seekR = (SeekBar) dialog.findViewById(R.id.seekbar_r);
-        var seekG = (SeekBar) dialog.findViewById(R.id.seekbar_g);
-        var seekB = (SeekBar) dialog.findViewById(R.id.seekbar_b);
-        var preview = dialog.findViewById(R.id.view_preview_cor);
-        var tagNome = (EditText) dialog.findViewById(R.id.text_nome_tag);
+        dialogTagsSelecionadas = view.findViewById(R.id.tags_selecionadas);
+        dialogTagsDisponiveis = view.findViewById(R.id.tags_disponiveis);
 
-        seekR.setProgress(r);
-        seekG.setProgress(g);
-        seekB.setProgress(b);
+        dialogTagsSelecionadas.setTags(new ArrayList<>(tagsWidget.getTags()), false, true);
+        dialogTagsSelecionadas.setClickListener((view1, position) -> {
+            var removido = dialogTagsSelecionadas.removeTag(position);
+            tagsWidget.removeTag(position);
 
-        var listener = new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                atualizarPreview(seekR, seekG, seekB, preview);
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {}
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {}
-        };
-
-        seekR.setOnSeekBarChangeListener(listener);
-        seekG.setOnSeekBarChangeListener(listener);
-        seekB.setOnSeekBarChangeListener(listener);
-
-        atualizarPreview(seekR, seekG, seekB, preview);
-
-        new AlertDialog.Builder(this).setTitle(R.string.nova_tag).setView(dialog).setPositiveButton(
-                R.string.adicionar, (d, w) -> {
-                    var nome = tagNome.getText().toString().trim();
-                    if (nome.isEmpty()) return;
-
-                    int cor = Color.rgb(
-                            seekR.getProgress(),
-                            seekG.getProgress(),
-                            seekB.getProgress()
-                    );
-
-                    tagsWidget.addTag(new Tag(nome, cor));
-                }
-        ).setNegativeButton(R.string.cancelar, (d, w) -> d.dismiss()).show();
-    }
-
-    private void atualizarPreview(SeekBar r, SeekBar g, SeekBar b, View preview) {
-        int cor = Color.rgb(r.getProgress(), g.getProgress(), b.getProgress());
-
-        Optional.ofNullable((GradientDrawable) ContextCompat.getDrawable(
-                this,
-                R.drawable.background_tag
-        )).map(GradientDrawable::mutate).ifPresent(d -> {
-            ((GradientDrawable) d).setColor(cor);
-            preview.setBackground(d);
+            dialogTagsDisponiveis.addTag(removido);
         });
+
+        var db = DiarioHumorDB.getInstance(this);
+        var dao = db.getTagDao();
+        var tagsRestante = dao.getTagsRestantes(tagsWidget.getTags().stream().map(Tag::getId)
+                                                          .collect(Collectors.toList()));
+
+        dialogTagsDisponiveis.setTags(new ArrayList<>(tagsRestante), true, false);
+        dialogTagsDisponiveis.setClickListener((view1, position) -> {
+            if (position == Integer.MIN_VALUE) {
+                launcherCadastroTag.launch(new Intent(this, CadastroTagActivity.class));
+            } else {
+                var removed = dialogTagsDisponiveis.removeTag(position);
+
+                tagsWidget.addTag(removed);
+                dialogTagsSelecionadas.addTag(removed);
+            }
+        });
+
+        new AlertDialog.Builder(this).setTitle(R.string.selecionar_tags).setView(view)
+                                     .setPositiveButton(R.string.ok, null)
+                                     .setOnDismissListener(d -> {
+                                         dialogTagsDisponiveis = null;
+                                         dialogTagsSelecionadas = null;
+                                     }).show();
+
     }
 }

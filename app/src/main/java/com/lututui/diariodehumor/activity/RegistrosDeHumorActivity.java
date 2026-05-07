@@ -2,7 +2,6 @@ package com.lututui.diariodehumor.activity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,23 +20,19 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.lututui.diariodehumor.PeriodoDia;
+import com.lututui.diariodehumor.DiarioHumorDB;
 import com.lututui.diariodehumor.R;
 import com.lututui.diariodehumor.RegistroDeHumor;
 import com.lututui.diariodehumor.RegistroHumorRecyclerViewAdapter;
-import com.lututui.diariodehumor.Sentimento;
 import com.lututui.diariodehumor.SortedArrayList;
 import com.lututui.diariodehumor.Util;
 import com.lututui.diariodehumor.ViewSelecionada;
-import com.lututui.diariodehumor.tags.Tag;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
 public class RegistrosDeHumorActivity extends AppCompatActivity {
-    private final boolean DEBUG_POPULAR_EXEMPLOS = true;
     private final List<Comparator<RegistroDeHumor>> comparators = Arrays.asList(
             Comparator.comparing(RegistroDeHumor::getData).reversed(),
             Comparator.comparing(RegistroDeHumor::getData),
@@ -121,8 +116,6 @@ public class RegistrosDeHumorActivity extends AppCompatActivity {
 
         registros = new SortedArrayList<>(modoOrdenacao);
 
-        if (DEBUG_POPULAR_EXEMPLOS) popularExemplos();
-
         recyclerViewAdapter = new RegistroHumorRecyclerViewAdapter(this, registros);
 
         var onLongClickListener = new RegistroHumorRecyclerViewAdapter.OnItemLongClickListener() {
@@ -157,13 +150,16 @@ public class RegistrosDeHumorActivity extends AppCompatActivity {
     }
 
     public void onCadastroResult(ActivityResult result) {
-        if (result.getResultCode() != RegistrosDeHumorActivity.RESULT_OK) return;
+        if (result.getResultCode() != RESULT_OK) return;
 
         var intent = result.getData();
 
         if (intent == null) return;
 
-        var rgHumor = (RegistroDeHumor) intent.getParcelableExtra(RegistroDeHumor.REGISTRO_DE_HUMOR_KEY);
+        var rgHumorId = intent.getLongExtra(CadastroRegistroHumorActivity.ID_KEY, -1);
+        var db = DiarioHumorDB.getInstance(this);
+
+        var rgHumor = db.getRegistroDeHumorDao().getRegistro(rgHumorId);
 
         if (rgHumor == null) return;
 
@@ -222,46 +218,9 @@ public class RegistrosDeHumorActivity extends AppCompatActivity {
         var intent = new Intent(this, CadastroRegistroHumorActivity.class);
 
         intent.putExtra(CadastroRegistroHumorActivity.MODO_KEY, true);
-        intent.putExtra(RegistroDeHumor.REGISTRO_DE_HUMOR_KEY, selecionado.getRegistro());
+        intent.putExtra(CadastroRegistroHumorActivity.ID_KEY, selecionado.getRegistro().getId());
 
         launcherNovoRegistro.launch(intent);
-    }
-
-    private void popularExemplos() {
-        var rsc = getResources();
-
-        String[] titulos = rsc.getStringArray(R.array.titulos);
-        int[] sentimentos = rsc.getIntArray(R.array.sentimentos);
-        int[] periodos = rsc.getIntArray(R.array.periodo);
-        int[] momentosEspeciais = rsc.getIntArray(R.array.especial);
-        String[] datas = rsc.getStringArray(R.array.datas);
-        String[] anotacoes = rsc.getStringArray(R.array.anotacoes);
-        String[] tagsString = rsc.getStringArray(R.array.tags);
-
-        for (int i = 0; i < titulos.length; i++) {
-            var periodo = PeriodoDia.values()[periodos[i]];
-            var sentimento = Sentimento.values()[sentimentos[i]];
-            var especial = momentosEspeciais[i] == 1;
-
-            var partes = tagsString[i].split("\\|");
-            var tags = new ArrayList<Tag>();
-
-            for (int j = 0; j < partes.length; j += 2) {
-                tags.add(new Tag(partes[j], Color.parseColor(partes[j + 1])));
-            }
-
-            var rg = new RegistroDeHumor(
-                    titulos[i],
-                    Util.FormatoData.DD_MM_YYYY.toDate(datas[i]),
-                    periodo,
-                    sentimento,
-                    especial,
-                    anotacoes[i],
-                    tags
-            );
-
-            registros.addSorted(rg);
-        }
     }
 
     @Override

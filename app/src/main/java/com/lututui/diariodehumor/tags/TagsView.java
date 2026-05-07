@@ -23,7 +23,8 @@ public class TagsView extends ViewGroup implements View.OnClickListener {
     private final int espacamentoVertical;
 
     private List<Tag> tags = new ArrayList<>();
-    private boolean modoEdicao = false;
+    private boolean remover = false;
+    private boolean adicionar = false;
 
     public void setClickListener(OnTagClickListener clickListener) {
         this.clickListener = clickListener;
@@ -62,7 +63,7 @@ public class TagsView extends ViewGroup implements View.OnClickListener {
     }
 
     public void setTags(List<Tag> tags) {
-        setTags(tags, modoEdicao);
+        setTags(tags, adicionar, remover);
     }
 
     public void addTag(Tag tag) {
@@ -77,15 +78,19 @@ public class TagsView extends ViewGroup implements View.OnClickListener {
         requestLayout();
     }
 
-    public void removeTag(int pos) {
-        this.tags.remove(pos);
+    public Tag removeTag(int pos) {
+        var removed = this.tags.remove(pos);
 
         refresh();
+
+        return removed;
     }
 
-    public void setTags(List<Tag> tags, boolean modoEdicao) {
+    public void setTags(List<Tag> tags, boolean adicionar, boolean remover) {
         this.tags = tags;
-        this.modoEdicao = modoEdicao;
+
+        this.adicionar = adicionar;
+        this.remover = remover;
 
         refresh();
     }
@@ -105,7 +110,7 @@ public class TagsView extends ViewGroup implements View.OnClickListener {
             var fechar = (TextView) tagView.findViewById(R.id.text_tag_fechar);
 
             nome.setText(tag.getNome());
-            fechar.setVisibility(modoEdicao ? View.VISIBLE : View.GONE);
+            fechar.setVisibility(remover ? View.VISIBLE : View.GONE);
 
             Optional.ofNullable(ContextCompat.getDrawable(getContext(), R.drawable.background_tag))
                     .map(Drawable::mutate).ifPresent(d -> {
@@ -123,7 +128,7 @@ public class TagsView extends ViewGroup implements View.OnClickListener {
             addView(tagView);
         }
 
-        if (modoEdicao) {
+        if (this.adicionar) {
             var adicionar = inflater.inflate(R.layout.item_tag_adicionar, this, false);
 
             adicionar.setTag(Integer.MIN_VALUE);

@@ -1,34 +1,28 @@
 package com.lututui.diariodehumor.tags;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.Index;
+import androidx.room.PrimaryKey;
 
-public class Tag implements Parcelable {
+import java.util.Objects;
+
+@Entity(indices = @Index(value = "nome", unique = true))
+public class Tag {
+    @NonNull
     private final String nome;
+    @ColumnInfo(index = true)
     private final int cor;
+    @PrimaryKey(autoGenerate = true)
+    private long id;
 
-    public Tag(String nome, int cor) {
+    public Tag(@NonNull String nome, int cor) {
         this.nome = nome;
         this.cor = cor;
     }
 
-    public static final Creator<Tag> CREATOR = new Creator<>() {
-        @Override
-        public Tag createFromParcel(Parcel in) {
-            var nome = in.readString();
-            var cor = in.readInt();
-
-            return new Tag(nome, cor);
-        }
-
-        @Override
-        public Tag[] newArray(int size) {
-            return new Tag[size];
-        }
-    };
-
+    @NonNull
     public String getNome() {
         return nome;
     }
@@ -38,13 +32,23 @@ public class Tag implements Parcelable {
     }
 
     @Override
-    public int describeContents() {
-        return 0;
+    public boolean equals(Object o) {
+        if (!(o instanceof Tag)) return false;
+
+        var tag = (Tag) o;
+        return Objects.equals(nome, tag.nome);
     }
 
     @Override
-    public void writeToParcel(@NonNull Parcel dest, int flags) {
-        dest.writeString(nome);
-        dest.writeInt(cor);
+    public int hashCode() {
+        return Objects.hash(nome);
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 }
