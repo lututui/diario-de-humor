@@ -106,7 +106,7 @@ public class ConfiguracoesActivity extends AppCompatActivity {
             sPref.edit().putBoolean(Util.SharedPreferences.SP_DEMO, isChecked).apply();
 
             if (isChecked) {
-                DiarioHumorDB.resetDemo();
+                DiarioHumorDB.resetDemo(this);
 
                 popularExemplos();
             }
@@ -128,7 +128,7 @@ public class ConfiguracoesActivity extends AppCompatActivity {
 
         Tag[][] tags = new Tag[size][];
 
-        try (var tagsArrays = rsc.obtainTypedArray(R.array.tags);) {
+        try (var tagsArrays = rsc.obtainTypedArray(R.array.tags)) {
             for (int i = 0; i < size; i++) {
                 var subArrayId = tagsArrays.getResourceId(i, 0);
 

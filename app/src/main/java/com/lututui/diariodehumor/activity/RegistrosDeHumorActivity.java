@@ -42,8 +42,9 @@ public class RegistrosDeHumorActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RegistroHumorRecyclerViewAdapter recyclerViewAdapter;
     private SortedArrayList<RegistroDeHumor> registros;
-    private final ActivityResultLauncher<Intent> launcherConfiguracoes = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
-            this::onConfiguracoesResult
+    private final ActivityResultLauncher<Intent> launcherTags = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            this::onTagsResult
     );
     private ActionMode actionMode;
     private ViewSelecionada selecionado;
@@ -88,6 +89,9 @@ public class RegistrosDeHumorActivity extends AppCompatActivity {
     };
     private boolean demoMode;
     private int sortMode;
+    private final ActivityResultLauncher<Intent> launcherConfiguracoes = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+            this::onConfiguracoesResult
+    );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,6 +121,8 @@ public class RegistrosDeHumorActivity extends AppCompatActivity {
         sortMode = sharedPref.getInt(Util.SharedPreferences.SP_ORDEM, 0);
 
         registros = new SortedArrayList<>(comparators.get(sortMode));
+        registros.addAllSorted(DiarioHumorDB.getInstance(this).getRegistroDeHumorDao()
+                                            .getRegistros());
 
         recyclerViewAdapter = new RegistroHumorRecyclerViewAdapter(this, registros);
 
@@ -149,9 +155,6 @@ public class RegistrosDeHumorActivity extends AppCompatActivity {
         recyclerView.setAdapter(recyclerViewAdapter);
 
         registerForContextMenu(recyclerView);
-
-        registros.addAllSorted(DiarioHumorDB.getInstance(this).getRegistroDeHumorDao()
-                                            .getRegistros());
     }
 
     public void onCadastroResult(ActivityResult result) {
@@ -250,6 +253,11 @@ public class RegistrosDeHumorActivity extends AppCompatActivity {
         launcherNovoRegistro.launch(intent);
     }
 
+    public void abrirTags() {
+        var intent = new Intent(this, TagsActivity.class);
+        launcherTags.launch(intent);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.opcoes_listagem, menu);
@@ -266,10 +274,20 @@ public class RegistrosDeHumorActivity extends AppCompatActivity {
             abrirSobre();
         } else if (menuItemId == R.id.menu_listagem_configuracao) {
             abrirConfiguracoes();
+        } else if (menuItemId == R.id.menu_listagem_tags) {
+            abrirTags();
         } else {
             return super.onContextItemSelected(item);
         }
 
         return true;
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private void onTagsResult(ActivityResult result) {
+        registros.clear();
+        registros.addAllSorted(DiarioHumorDB.getInstance(this).getRegistroDeHumorDao()
+                                            .getRegistros());
+        recyclerViewAdapter.notifyDataSetChanged();
     }
 }

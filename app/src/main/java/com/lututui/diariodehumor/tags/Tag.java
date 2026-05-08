@@ -48,12 +48,12 @@ public class Tag {
         if (!(o instanceof Tag)) return false;
 
         var tag = (Tag) o;
-        return Objects.equals(nome, tag.nome);
+        return Objects.equals(nome, tag.nome) && cor == tag.cor;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(nome);
+        return Objects.hash(nome, cor);
     }
 
     public long getId() {

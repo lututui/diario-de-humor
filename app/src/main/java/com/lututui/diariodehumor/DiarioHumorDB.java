@@ -25,9 +25,12 @@ public abstract class DiarioHumorDB extends RoomDatabase {
     private static volatile DiarioHumorDB INSTANCE;
     private static volatile DiarioHumorDB DEMO_INSTANCE;
 
-    public static void resetDemo() {
+    public static void resetDemo(Context context) {
         synchronized (DiarioHumorDB.class) {
-            DEMO_INSTANCE = null;
+            context.deleteDatabase(DB_DEMO_NAME);
+
+            DEMO_INSTANCE = Room.databaseBuilder(context, DiarioHumorDB.class, DB_DEMO_NAME)
+                                .allowMainThreadQueries().build();
         }
     }
 
@@ -61,8 +64,6 @@ public abstract class DiarioHumorDB extends RoomDatabase {
 
             synchronized (DiarioHumorDB.class) {
                 if (DEMO_INSTANCE == null) {
-                    context.deleteDatabase(DB_DEMO_NAME);
-
                     DEMO_INSTANCE = Room.databaseBuilder(context, DiarioHumorDB.class, DB_DEMO_NAME)
                                         .allowMainThreadQueries().build();
                 }

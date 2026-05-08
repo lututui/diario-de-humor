@@ -1,10 +1,12 @@
 package com.lututui.diariodehumor.tags;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,20 +20,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class TagsView extends ViewGroup implements View.OnClickListener {
+public class TagsView extends ViewGroup implements View.OnClickListener, View.OnLongClickListener,
+        View.OnCreateContextMenuListener {
     private final int espacamentoHorizontal;
     private final int espacamentoVertical;
 
     private List<Tag> tags = new ArrayList<>();
     private boolean remover = false;
     private boolean adicionar = false;
-
-    public void setClickListener(OnTagClickListener clickListener) {
-        this.clickListener = clickListener;
-    }
-
+    private boolean registrarMenu = false;
     private OnTagClickListener clickListener;
-
+    private OnTagLongClickListener longClickListener;
+    private OnCreateContextMenuListener createContextMenuListener;
 
     public TagsView(Context context) {
         this(context, null);
@@ -45,6 +45,7 @@ public class TagsView extends ViewGroup implements View.OnClickListener {
         this(context, attrs, defStyleAttr, 0);
     }
 
+
     public TagsView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
 
@@ -53,17 +54,40 @@ public class TagsView extends ViewGroup implements View.OnClickListener {
         this.espacamentoVertical = (int) (8 * density);
     }
 
-    @Override
-    public void onClick(View v) {
-        var p = (int) v.getTag();
+    private static int corDoTexto(int corFundo) {
+        int r = Color.red(corFundo);
+        int g = Color.green(corFundo);
+        int b = Color.blue(corFundo);
 
-        if (clickListener == null || p == -1) return;
+        double luminancia = 0.299 * r + 0.587 * g + 0.114 * b;
 
-        clickListener.onTagClickListener(v, p);
+        return luminancia > 128 ? Color.BLACK : Color.WHITE;
     }
 
-    public void setTags(List<Tag> tags) {
-        setTags(tags, adicionar, remover);
+    public void setRegistrarMenu(boolean registrarMenu) {
+        this.registrarMenu = registrarMenu;
+    }
+
+    public void setClickListener(OnTagClickListener clickListener) {
+        this.clickListener = clickListener;
+    }
+
+    public void setLongClickListener(OnTagLongClickListener longClickListener) {
+        this.longClickListener = longClickListener;
+    }
+
+    public void setCreateContextMenuListener(OnCreateContextMenuListener createContextMenuListener) {
+        this.createContextMenuListener = createContextMenuListener;
+    }
+
+    @Override
+    public void onClick(View v) {
+        var p = indexOfChild(v);
+
+        if (clickListener == null) return;
+        if (p == tags.size() && adicionar) return;
+
+        clickListener.onTagClickListener(v, p);
     }
 
     public void addTag(Tag tag) {
@@ -99,6 +123,10 @@ public class TagsView extends ViewGroup implements View.OnClickListener {
         return this.tags;
     }
 
+    public void setTags(List<Tag> tags) {
+        setTags(tags, adicionar, remover);
+    }
+
     private void inflarTags() {
         var inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -118,12 +146,17 @@ public class TagsView extends ViewGroup implements View.OnClickListener {
                         tagView.setBackground(d);
                     });
 
-            tagView.setTag(i);
             tagView.setOnClickListener(this);
 
             var corTexto = corDoTexto(tag.getCor());
             nome.setTextColor(corTexto);
             fechar.setTextColor(corTexto);
+
+            if (registrarMenu) {
+                ((Activity) getContext()).registerForContextMenu(tagView);
+
+                tagView.setOnCreateContextMenuListener(this);
+            }
 
             addView(tagView);
         }
@@ -131,7 +164,6 @@ public class TagsView extends ViewGroup implements View.OnClickListener {
         if (this.adicionar) {
             var adicionar = inflater.inflate(R.layout.item_tag_adicionar, this, false);
 
-            adicionar.setTag(Integer.MIN_VALUE);
             adicionar.setOnClickListener(this);
 
             addView(adicionar);
@@ -197,17 +229,48 @@ public class TagsView extends ViewGroup implements View.OnClickListener {
         }
     }
 
-    private static int corDoTexto(int corFundo) {
-        int r = Color.red(corFundo);
-        int g = Color.green(corFundo);
-        int b = Color.blue(corFundo);
+    @Override
+    public boolean onLongClick(View v) {
+        var p = indexOfChild(v);
 
-        double luminancia = 0.299 * r + 0.587 * g + 0.114 * b;
+        if (longClickListener == null) return false;
+        if (p == tags.size() && adicionar) return false;
 
-        return luminancia > 128 ? Color.BLACK : Color.WHITE;
+        return longClickListener.onTagLongClickListener(v, p);
+    }
+
+    @Override
+    public void onCreateContextMenu(
+            ContextMenu menu,
+            View v,
+            ContextMenu.ContextMenuInfo menuInfo
+    ) {
+        var p = indexOfChild(v);
+
+        if (createContextMenuListener == null) return;
+        if (p == tags.size() && adicionar) return;
+
+        createContextMenuListener.onCreateContextMenuListener(v, menu, menuInfo, p);
+    }
+
+    public Tag getTagAt(int pos) {
+        return tags.get(pos);
     }
 
     public interface OnTagClickListener {
         void onTagClickListener(View view, int position);
+    }
+
+    public interface OnTagLongClickListener {
+        boolean onTagLongClickListener(View view, int position);
+    }
+
+    public interface OnCreateContextMenuListener {
+        void onCreateContextMenuListener(
+                View view,
+                ContextMenu menu,
+                ContextMenu.ContextMenuInfo menuInfo,
+                int position
+        );
     }
 }

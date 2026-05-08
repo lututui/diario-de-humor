@@ -59,13 +59,11 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
 
 
     private TagsView dialogTagsSelecionadas;
-    private TagsView dialogTagsDisponiveis;
-
-
-    private ActivityResultLauncher<Intent> launcherCadastroTag = registerForActivityResult(
+    private final ActivityResultLauncher<Intent> launcherCadastroTag = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             this::onCadastroTagResult
     );
+    private TagsView dialogTagsDisponiveis;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

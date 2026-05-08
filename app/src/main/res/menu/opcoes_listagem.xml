@@ -13,6 +13,9 @@
         android:checkable="false"
         android:title="@string/sobre" />
     <item
+        android:id="@+id/menu_listagem_tags"
+        android:title="@string/editar_tags" />
+    <item
         android:id="@+id/menu_listagem_configuracao"
         android:title="@string/configuracoes" />
 </menu>

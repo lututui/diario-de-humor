@@ -79,4 +79,10 @@
     <string name="debug">Debug</string>
     <string name="modo_demonstracao">Demo mode</string>
     <string name="modo_demo_descricao">Load sample data. Your real data is kept safe and can be restored by turning this off.</string>
+    <string name="editar_tag">Edit tag</string>
+    <string name="editar_tags">Edit tags</string>
+    <string name="todas_tags">All tags</string>
+    <string name="remover">Remove</string>
+    <string name="tag_sem_nome">No tag name</string>
+    <string name="tag_sem_nome_erro">Please set a tag name</string>
 </resources>

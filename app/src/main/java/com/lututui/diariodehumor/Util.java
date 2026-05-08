@@ -49,8 +49,12 @@ public class Util {
     }
 
     public static class Alert {
-        public static void mostrarAviso(Context context, String titulo, String mensagem,
-                                        DialogInterface.OnClickListener listener){
+        public static void mostrarAviso(
+                Context context,
+                String titulo,
+                String mensagem,
+                DialogInterface.OnClickListener listener
+        ) {
 
             var builder = new AlertDialog.Builder(context);
 
