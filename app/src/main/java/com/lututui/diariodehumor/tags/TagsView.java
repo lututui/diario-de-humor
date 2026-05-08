@@ -54,7 +54,7 @@ public class TagsView extends ViewGroup implements View.OnClickListener, View.On
         this.espacamentoVertical = (int) (8 * density);
     }
 
-    private static int corDoTexto(int corFundo) {
+    public static int corDoTexto(int corFundo) {
         int r = Color.red(corFundo);
         int g = Color.green(corFundo);
         int b = Color.blue(corFundo);
@@ -85,7 +85,7 @@ public class TagsView extends ViewGroup implements View.OnClickListener, View.On
         var p = indexOfChild(v);
 
         if (clickListener == null) return;
-        if (p == tags.size() && adicionar) return;
+        if (p == tags.size() && adicionar) p = Integer.MIN_VALUE;
 
         clickListener.onTagClickListener(v, p);
     }

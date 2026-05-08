@@ -62,9 +62,9 @@
     <string name="adicionar_icone">+</string>
     <string name="tags">Tags</string>
     <string name="nova_tag">New Tag</string>
-    <string name="r">R</string>
-    <string name="g">G</string>
-    <string name="b">B</string>
+    <string name="r" translatable="false">R</string>
+    <string name="g" translatable="false">G</string>
+    <string name="b" translatable="false">B</string>
     <string name="tag_name">Tag name</string>
     <string name="tag_color">Tag color</string>
     <string name="cancelar">Cancel</string>
@@ -85,4 +85,7 @@
     <string name="remover">Remove</string>
     <string name="tag_sem_nome">No tag name</string>
     <string name="tag_sem_nome_erro">Please set a tag name</string>
+    <string name="tag_unset">Select…</string>
+    <string name="formato_data_locale">MM/dd/yyyy</string>
+    <string name="usar_formato_data_idioma">Use language date format</string>
 </resources>

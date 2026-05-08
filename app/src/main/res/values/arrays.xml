@@ -25,5 +25,6 @@
         <item>@string/dia_mes_ano</item>
         <item>@string/mes_dia_ano</item>
         <item>@string/ano_mes_dia</item>
+        <item>@string/usar_formato_data_idioma</item>
     </string-array>
 </resources>

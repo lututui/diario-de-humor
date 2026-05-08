@@ -33,6 +33,7 @@ import com.lututui.diariodehumor.Sentimento;
 import com.lututui.diariodehumor.Util;
 import com.lututui.diariodehumor.tags.Tag;
 import com.lututui.diariodehumor.tags.TagRegistroDeHumor;
+import com.lututui.diariodehumor.tags.TagSpinnerAdapter;
 import com.lututui.diariodehumor.tags.TagsView;
 
 import java.util.ArrayList;
@@ -54,16 +55,11 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
 
     private Calendar calendar;
     private boolean editando;
-    private Util.FormatoData modoData;
     private RegistroDeHumor registroDeHumorOriginal;
 
 
     private TagsView dialogTagsSelecionadas;
-    private final ActivityResultLauncher<Intent> launcherCadastroTag = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            this::onCadastroTagResult
-    );
-    private TagsView dialogTagsDisponiveis;
+    private Spinner dialogTagsDisponiveis;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -81,9 +77,6 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
         tagsWidget = findViewById(R.id.tags_view_cadastro);
 
         editando = getIntent().getBooleanExtra(MODO_KEY, false);
-
-        var sharedPref = getSharedPreferences(Util.SharedPreferences.FILE, MODE_PRIVATE);
-        modoData = Util.FormatoData.values()[sharedPref.getInt(Util.SharedPreferences.SP_DATA, 0)];
 
         tagsWidget.setClickListener((view, position) -> {
             if (position == Integer.MIN_VALUE) {
@@ -113,7 +106,7 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
             momentoEspecialWidget.setChecked(registroDeHumorOriginal.isEspecial());
             anotacoesWidget.setText(registroDeHumorOriginal.getAnotacoes());
 
-            tagsWidget.setTags(registroDeHumorOriginal.getTags(), true, true);
+            tagsWidget.setTags(new ArrayList<>(registroDeHumorOriginal.getTags()), true, true);
         } else {
             tagsWidget.setTags(new ArrayList<>(), true, true);
         }
@@ -122,7 +115,10 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
     }
 
     private void setDataWidget() {
-        dataWidget.setText(modoData.toString(calendar.getTime()));
+        var sharedPref = getSharedPreferences(Util.SharedPreferences.FILE, MODE_PRIVATE);
+        var modoData = Util.FormatoData.values()[sharedPref.getInt(Util.SharedPreferences.SP_DATA, 0)];
+
+        dataWidget.setText(modoData.toString(this, calendar.getTime()));
     }
 
     public void salvar() {
@@ -158,7 +154,9 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
         var dataString = Optional.ofNullable(dataWidget.getText()).map(o -> o.toString().trim())
                                  .orElse("");
 
-        var data = modoData.toDate(dataString);
+        var sharedPref = getSharedPreferences(Util.SharedPreferences.FILE, MODE_PRIVATE);
+        var modoData = Util.FormatoData.values()[sharedPref.getInt(Util.SharedPreferences.SP_DATA, 0)];
+        var data = modoData.toDate(this, dataString);
 
         if (data == null) {
             Toast.makeText(this, R.string.erro_data_invalida, Toast.LENGTH_LONG).show();
@@ -284,26 +282,6 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
         return true;
     }
 
-    public void onCadastroTagResult(ActivityResult result) {
-        if (result.getResultCode() != RESULT_OK) return;
-
-        var intent = result.getData();
-
-        if (intent == null) return;
-
-        var novaTagId = intent.getLongExtra(CadastroTagActivity.ID_KEY, -1);
-
-        var db = DiarioHumorDB.getInstance(this);
-        var dao = db.getTagDao();
-
-        if (novaTagId != -1) {
-            var novaTag = dao.getTag(novaTagId);
-
-            tagsWidget.addTag(novaTag);
-            dialogTagsSelecionadas.addTag(novaTag);
-        }
-    }
-
     public void dialogSelecionarTags() {
         var inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         @SuppressLint("InflateParams") var view = inflater.inflate(
@@ -313,31 +291,48 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
         );
 
         dialogTagsSelecionadas = view.findViewById(R.id.tags_selecionadas);
-        dialogTagsDisponiveis = view.findViewById(R.id.tags_disponiveis);
+        dialogTagsDisponiveis = view.findViewById(R.id.spinner_tags_disponiveis);
+
+        var db = DiarioHumorDB.getInstance(this);
+        var dao = db.getTagDao();
+
+        var tagsRestantes = new ArrayList<Tag>();
+        tagsRestantes.add(null);
+        tagsRestantes.addAll(dao.getTagsRestantes(tagsWidget.getTags().stream().map(Tag::getId)
+                                                            .collect(Collectors.toList())));
+
+
+        var spinnerAdapter = new TagSpinnerAdapter(this, tagsRestantes);
+
+        dialogTagsDisponiveis.setAdapter(spinnerAdapter);
+        dialogTagsDisponiveis.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position == 0) return;
+
+                var selecionada = spinnerAdapter.getItem(position);
+
+                tagsWidget.addTag(selecionada);
+                dialogTagsSelecionadas.addTag(selecionada);
+
+                spinnerAdapter.remove(selecionada);
+                spinnerAdapter.notifyDataSetChanged();
+
+                dialogTagsDisponiveis.setSelection(0);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
 
         dialogTagsSelecionadas.setTags(new ArrayList<>(tagsWidget.getTags()), false, true);
         dialogTagsSelecionadas.setClickListener((view1, position) -> {
             var removido = dialogTagsSelecionadas.removeTag(position);
             tagsWidget.removeTag(position);
 
-            dialogTagsDisponiveis.addTag(removido);
-        });
-
-        var db = DiarioHumorDB.getInstance(this);
-        var dao = db.getTagDao();
-        var tagsRestante = dao.getTagsRestantes(tagsWidget.getTags().stream().map(Tag::getId)
-                                                          .collect(Collectors.toList()));
-
-        dialogTagsDisponiveis.setTags(new ArrayList<>(tagsRestante), true, false);
-        dialogTagsDisponiveis.setClickListener((view1, position) -> {
-            if (position == Integer.MIN_VALUE) {
-                launcherCadastroTag.launch(new Intent(this, CadastroTagActivity.class));
-            } else {
-                var removed = dialogTagsDisponiveis.removeTag(position);
-
-                tagsWidget.addTag(removed);
-                dialogTagsSelecionadas.addTag(removed);
-            }
+            spinnerAdapter.add(removido);
+            spinnerAdapter.notifyDataSetChanged();
         });
 
         new AlertDialog.Builder(this).setTitle(R.string.selecionar_tags).setView(view)

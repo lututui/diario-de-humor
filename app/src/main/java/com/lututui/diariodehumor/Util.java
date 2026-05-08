@@ -12,18 +12,30 @@ import java.util.Locale;
 
 public class Util {
     public enum FormatoData {
-        DD_MM_YYYY("dd/MM/yyyy"), MM_DD_YYYY("MM/dd/yyyy"), YYYY_MM_DD("yyyy/MM/dd");
+        DD_MM_YYYY("dd/MM/yyyy"), MM_DD_YYYY("MM/dd/yyyy"), YYYY_MM_DD("yyyy/MM/dd"), LOCALE(null);
 
 
         private final String formatString;
-        private final SimpleDateFormat formatter;
+        private SimpleDateFormat formatter;
 
         FormatoData(String formatString) {
             this.formatString = formatString;
-            this.formatter = new SimpleDateFormat(this.formatString, Locale.ROOT);
+
+            if (this.formatString != null) {
+                this.formatter = new SimpleDateFormat(formatString, Locale.ROOT);
+            }
         }
 
-        public Date toDate(String maybeDate) {
+        private void createFormatter(Context context) {
+            if (this.formatter != null) return;
+
+            var pattern = context.getString(R.string.formato_data_locale);
+            this.formatter = new SimpleDateFormat(pattern, Locale.ROOT);
+        }
+
+        public Date toDate(Context context, String maybeDate) {
+            createFormatter(context);
+
             try {
                 return formatter.parse(maybeDate);
             } catch (ParseException e) {
@@ -31,7 +43,9 @@ public class Util {
             }
         }
 
-        public String toString(Date data) {
+        public String toString(Context context, Date data) {
+            createFormatter(context);
+
             return formatter.format(data);
         }
 

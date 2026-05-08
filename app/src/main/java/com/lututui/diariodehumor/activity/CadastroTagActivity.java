@@ -1,5 +1,6 @@
 package com.lututui.diariodehumor.activity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -154,6 +155,8 @@ public class CadastroTagActivity extends AppCompatActivity {
 
                 return;
             }
+
+            setResult(RESULT_OK);
         } else {
             var tagId = tagDao.inserir(newTag);
 
@@ -164,9 +167,14 @@ public class CadastroTagActivity extends AppCompatActivity {
             }
 
             newTag.setId(tagId);
+
+            var intent = new Intent();
+
+            intent.putExtra(ID_KEY, newTag.getId());
+
+            setResult(RESULT_OK, intent);
         }
 
-        setResult(RESULT_OK);
         finish();
     }
 

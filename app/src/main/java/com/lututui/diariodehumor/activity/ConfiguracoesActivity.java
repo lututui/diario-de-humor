@@ -90,7 +90,7 @@ public class ConfiguracoesActivity extends AppCompatActivity {
         formatoDataWidget.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position < 0 || position > 3) return;
+                if (position < 0 || position > 4) return;
 
                 var sharedPref = getSharedPreferences(Util.SharedPreferences.FILE, MODE_PRIVATE);
                 sharedPref.edit().putInt(Util.SharedPreferences.SP_DATA, position).apply();
@@ -152,7 +152,7 @@ public class ConfiguracoesActivity extends AppCompatActivity {
 
             var rg = new RegistroDeHumor(
                     titulos[i],
-                    Util.FormatoData.DD_MM_YYYY.toDate(datas[i]),
+                    Util.FormatoData.DD_MM_YYYY.toDate(this, datas[i]),
                     periodo,
                     sentimento,
                     especial,

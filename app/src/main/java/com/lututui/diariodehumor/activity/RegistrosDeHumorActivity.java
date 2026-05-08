@@ -87,8 +87,6 @@ public class RegistrosDeHumorActivity extends AppCompatActivity {
             actionMode = null;
         }
     };
-    private boolean demoMode;
-    private int sortMode;
     private final ActivityResultLauncher<Intent> launcherConfiguracoes = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
             this::onConfiguracoesResult
     );
@@ -99,7 +97,6 @@ public class RegistrosDeHumorActivity extends AppCompatActivity {
         setContentView(R.layout.activity_registros_de_humor);
 
         var sharedPref = getSharedPreferences(Util.SharedPreferences.FILE, MODE_PRIVATE);
-        demoMode = sharedPref.getBoolean(Util.SharedPreferences.SP_DEMO, false);
 
         var esquemaCores = sharedPref.getInt(Util.SharedPreferences.SP_CORES, 0);
 
@@ -118,7 +115,7 @@ public class RegistrosDeHumorActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
 
-        sortMode = sharedPref.getInt(Util.SharedPreferences.SP_ORDEM, 0);
+        var sortMode = sharedPref.getInt(Util.SharedPreferences.SP_ORDEM, 0);
 
         registros = new SortedArrayList<>(comparators.get(sortMode));
         registros.addAllSorted(DiarioHumorDB.getInstance(this).getRegistroDeHumorDao()
@@ -197,28 +194,17 @@ public class RegistrosDeHumorActivity extends AppCompatActivity {
     public void onConfiguracoesResult(ActivityResult result) {
         var sharedPref = getSharedPreferences(Util.SharedPreferences.FILE, MODE_PRIVATE);
 
-        var newSortMode = sharedPref.getInt(Util.SharedPreferences.SP_ORDEM, 0);
+        var sortMode = sharedPref.getInt(Util.SharedPreferences.SP_ORDEM, 0);
+        var sortComp = comparators.get(sortMode);
+        registros.setComparator(sortComp);
 
-        if (newSortMode != sortMode) {
-            var sortComp = comparators.get(newSortMode);
+        var db = DiarioHumorDB.getInstance(this);
+        var rgDao = db.getRegistroDeHumorDao();
 
-            registros.setComparator(sortComp);
-            recyclerViewAdapter.notifyDataSetChanged();
+        registros.clear();
+        registros.addAllSorted(rgDao.getRegistros());
 
-            sortMode = newSortMode;
-        }
-
-        var newDemoMode = sharedPref.getBoolean(Util.SharedPreferences.SP_DEMO, false);
-
-        if (newDemoMode != demoMode) {
-            registros.clear();
-            registros.addAllSorted(DiarioHumorDB.getInstance(this).getRegistroDeHumorDao()
-                                                .getRegistros());
-
-            recyclerViewAdapter.notifyDataSetChanged();
-
-            demoMode = newDemoMode;
-        }
+        recyclerViewAdapter.notifyDataSetChanged();
     }
 
     public void abrirSobre() {

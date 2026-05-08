@@ -89,7 +89,7 @@ public class RegistroHumorRecyclerViewAdapter
         )];
 
         holder.titulo.setText(rg_humor.getTitulo());
-        holder.data.setText(dataMode.toString(rg_humor.getData()));
+        holder.data.setText(dataMode.toString(context, rg_humor.getData()));
         holder.periodo.setText(context.getString(rg_humor.getPeriodoDia().getResourceID()));
         holder.sentimento.setText(context.getString(rg_humor.getSentimento().getResourceID()));
 

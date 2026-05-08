@@ -15,9 +15,15 @@ public class SortedArrayList<T> extends ArrayList<T> {
     }
 
     public void setComparator(Comparator<T> comparator) {
+        setComparator(comparator, false);
+    }
+
+    public void setComparator(Comparator<T> comparator, boolean resort) {
+        if (comparator == null || comparator.equals(this.comparator)) return;
+
         this.comparator = comparator;
 
-        this.sort(this.comparator);
+        if (resort) this.sort(this.comparator);
     }
 
     public int findInsertPosition(T newItem) {
