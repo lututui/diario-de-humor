@@ -1,12 +1,16 @@
 package com.lututui.diariodehumor.tags;
 
+import android.graphics.Color;
+
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 import java.util.Objects;
+import java.util.Random;
 
 @Entity(indices = @Index(value = "nome", unique = true))
 public class Tag {
@@ -20,6 +24,14 @@ public class Tag {
     public Tag(@NonNull String nome, int cor) {
         this.nome = nome;
         this.cor = cor;
+    }
+
+    @Ignore
+    public Tag(@NonNull String nome) {
+        var r = new Random();
+
+        this.nome = nome;
+        this.cor = Color.rgb(r.nextInt(255), r.nextInt(255), r.nextInt(255));
     }
 
     @NonNull

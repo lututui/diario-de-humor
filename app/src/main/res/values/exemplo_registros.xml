@@ -79,16 +79,97 @@
     </string-array>
 
     <string-array name="tags">
-        <item>Trabalho|#4CAF50|Foco|#8BC34A|Energia|#FFEB3B|Organização|#009688</item>
-        <item>Trabalho|#4CAF50|Estresse|#F44336|Conflito|#E91E63</item>
-        <item>Amigos|#2196F3|Lazer|#00BCD4|Alegria|#FFEB3B|Social|#9C27B0|Ar livre|#4CAF50</item>
-        <item>Sono|#3F51B5|Ansiedade|#FF5722|Noite|#212121|Cansaço|#9E9E9E|Saúde|#F44336|Estresse|#E91E63</item>
-        <item>Exercício|#FF9800|Saúde|#4CAF50|Conquista|#FFEB3B|Energia|#8BC34A|Disciplina|#009688|Bem-estar|#00BCD4|Motivação|#FF5722</item>
-        <item>Família|#9C27B0|Tristeza|#3F51B5|Preocupação|#F44336|Notícia|#607D8B</item>
-        <item>Família|#9C27B0|Comida|#FF9800|Alegria|#FFEB3B|Social|#2196F3|Gratidão|#4CAF50|Casa|#795548</item>
-        <item>Rotina|#9E9E9E|Tédio|#607D8B|Neutro|#BDBDBD</item>
-        <item>Trabalho|#4CAF50|Conquista|#FFEB3B|Reconhecimento|#FF9800|Alegria|#FFC107|Carreira|#2196F3|Motivação|#8BC34A|Gratidão|#009688|Celebração|#E91E63</item>
-        <item>Saúde|#F44336|Dor|#B71C1C|Cansaço|#9E9E9E|Desconforto|#FF5722|Sono|#3F51B5</item>
+        <item>@array/tags_1</item>
+        <item>@array/tags_2</item>
+        <item>@array/tags_3</item>
+        <item>@array/tags_4</item>
+        <item>@array/tags_5</item>
+        <item>@array/tags_6</item>
+        <item>@array/tags_7</item>
+        <item>@array/tags_8</item>
+        <item>@array/tags_9</item>
+        <item>@array/tags_10</item>
+    </string-array>
+
+    <string-array name="tags_1">
+        <item>Trabalho</item>
+        <item>Foco</item>
+        <item>Energia</item>
+        <item>Organização</item>
+    </string-array>
+
+    <string-array name="tags_2">
+        <item>Trabalho</item>
+        <item>Estresse</item>
+        <item>Conflito</item>
+    </string-array>
+
+    <string-array name="tags_3">
+        <item>Amigos</item>
+        <item>Lazer</item>
+        <item>Alegria</item>
+        <item>Social</item>
+        <item>Ar livre</item>
+    </string-array>
+
+    <string-array name="tags_4">
+        <item>Sono</item>
+        <item>Ansiedade</item>
+        <item>Noite</item>
+        <item>Cansaço</item>
+        <item>Saúde</item>
+        <item>Estresse</item>
+    </string-array>
+
+    <string-array name="tags_5">
+        <item>Exercício</item>
+        <item>Saúde</item>
+        <item>Conquista</item>
+        <item>Energia</item>
+        <item>Disciplina</item>
+        <item>Bem-estar</item>
+        <item>Motivação</item>
+    </string-array>
+
+    <string-array name="tags_6">
+        <item>Família</item>
+        <item>Tristeza</item>
+        <item>Preocupação</item>
+        <item>Notícia</item>
+    </string-array>
+
+    <string-array name="tags_7">
+        <item>Família</item>
+        <item>Comida</item>
+        <item>Alegria</item>
+        <item>Social</item>
+        <item>Gratidão</item>
+        <item>Casa</item>
+    </string-array>
+
+    <string-array name="tags_8">
+        <item>Rotina</item>
+        <item>Tédio</item>
+        <item>Neutro</item>
+    </string-array>
+
+    <string-array name="tags_9">
+        <item>Trabalho</item>
+        <item>Conquista</item>
+        <item>Reconhecimento</item>
+        <item>Alegria</item>
+        <item>Carreira</item>
+        <item>Motivação</item>
+        <item>Gratidão</item>
+        <item>Celebração</item>
+    </string-array>
+
+    <string-array name="tags_10">
+        <item>Saúde</item>
+        <item>Dor</item>
+        <item>Cansaço</item>
+        <item>Desconforto</item>
+        <item>Sono</item>
     </string-array>
     
 </resources>

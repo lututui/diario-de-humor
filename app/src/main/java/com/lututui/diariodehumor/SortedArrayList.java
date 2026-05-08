@@ -1,6 +1,9 @@
 package com.lututui.diariodehumor;
 
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -25,6 +28,10 @@ public class SortedArrayList<T> extends ArrayList<T> {
         return index;
     }
 
+    public void addAllSorted(Collection<? extends T> newItems) {
+        newItems.forEach(this::addSorted);
+    }
+
     public int addSorted(T newItem) {
         int index = findInsertPosition(newItem);
 
@@ -37,6 +44,14 @@ public class SortedArrayList<T> extends ArrayList<T> {
     @Deprecated
     public boolean add(T t) {
         this.addSorted(t);
+
+        return true;
+    }
+
+    @Override
+    @Deprecated
+    public boolean addAll(@NonNull Collection<? extends T> c) {
+        this.addAllSorted(c);
 
         return true;
     }

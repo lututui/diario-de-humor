@@ -10,14 +10,14 @@ import com.lututui.diariodehumor.RegistroDeHumorEntity;
         @ForeignKey(entity = RegistroDeHumorEntity.class, parentColumns = "id", childColumns = "registroId", onDelete = ForeignKey.CASCADE),
         @ForeignKey(entity = Tag.class, parentColumns = "id", childColumns = "tagId", onDelete = ForeignKey.CASCADE)
 })
-public class TagCrossRefRegistroDeHumor {
+public class TagRegistroDeHumor {
     @ColumnInfo(index = true)
     private final long registroId;
 
     @ColumnInfo(index = true)
     private final long tagId;
 
-    public TagCrossRefRegistroDeHumor(long registroId, long tagId) {
+    public TagRegistroDeHumor(long registroId, long tagId) {
         this.registroId = registroId;
         this.tagId = tagId;
     }

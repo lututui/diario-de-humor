@@ -1,5 +1,7 @@
 package com.lututui.diariodehumor;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.content.Context;
 
 import androidx.room.Database;
@@ -10,18 +12,37 @@ import androidx.room.TypeConverters;
 import com.lututui.diariodehumor.dao.RegistroDeHumorDao;
 import com.lututui.diariodehumor.dao.TagDao;
 import com.lututui.diariodehumor.tags.Tag;
-import com.lututui.diariodehumor.tags.TagCrossRefRegistroDeHumor;
+import com.lututui.diariodehumor.tags.TagRegistroDeHumor;
 
 @Database(entities = {
-        RegistroDeHumorEntity.class, Tag.class, TagCrossRefRegistroDeHumor.class
+        RegistroDeHumorEntity.class, Tag.class, TagRegistroDeHumor.class
 }, version = 1)
 @TypeConverters(Converters.class)
 public abstract class DiarioHumorDB extends RoomDatabase {
     private static final String DB_NAME = "diario_humor_db";
+    private static final String DB_DEMO_NAME = "diario_humor_db_demo";
 
     private static volatile DiarioHumorDB INSTANCE;
+    private static volatile DiarioHumorDB DEMO_INSTANCE;
 
-    public static DiarioHumorDB getInstance(final Context context) {
+    public static void resetDemo() {
+        synchronized (DiarioHumorDB.class) {
+            DEMO_INSTANCE = null;
+        }
+    }
+
+    public static DiarioHumorDB getInstance(Context context) {
+        var sharedPref = context.getSharedPreferences(Util.SharedPreferences.FILE, MODE_PRIVATE);
+        var demo = sharedPref.getBoolean(Util.SharedPreferences.SP_DEMO, false);
+
+        if (demo) {
+            return getDemoInstance(context);
+        }
+
+        return getLiveInstance(context);
+    }
+
+    private static DiarioHumorDB getLiveInstance(Context context) {
         if (INSTANCE == null) {
 
             synchronized (DiarioHumorDB.class) {
@@ -35,6 +56,23 @@ public abstract class DiarioHumorDB extends RoomDatabase {
         return INSTANCE;
     }
 
+    private static DiarioHumorDB getDemoInstance(Context context) {
+        if (DEMO_INSTANCE == null) {
+
+            synchronized (DiarioHumorDB.class) {
+                if (DEMO_INSTANCE == null) {
+                    context.deleteDatabase(DB_DEMO_NAME);
+
+                    DEMO_INSTANCE = Room.databaseBuilder(context, DiarioHumorDB.class, DB_DEMO_NAME)
+                                        .allowMainThreadQueries().build();
+                }
+            }
+        }
+
+        return DEMO_INSTANCE;
+    }
+
     public abstract RegistroDeHumorDao getRegistroDeHumorDao();
+
     public abstract TagDao getTagDao();
 }

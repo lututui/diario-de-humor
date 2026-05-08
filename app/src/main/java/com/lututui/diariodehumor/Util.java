@@ -27,7 +27,7 @@ public class Util {
             try {
                 return formatter.parse(maybeDate);
             } catch (ParseException e) {
-                return null;
+                return new Date(0);
             }
         }
 
@@ -45,6 +45,7 @@ public class Util {
         public static final String SP_CORES = "SP_CORES";
         public static final String SP_ORDEM = "SP_ORDEM";
         public static final String SP_DATA = "SP_DATA";
+        public static final String SP_DEMO = "SP_DEMO";
     }
 
     public static class Alert {

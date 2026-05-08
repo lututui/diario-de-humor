@@ -76,4 +76,7 @@
     <string name="tags_selecionadas">Selected Tags</string>
     <string name="tags_disponiveis">Available tags</string>
     <string name="selecionar_tags">Select tags</string>
+    <string name="debug">Debug</string>
+    <string name="modo_demonstracao">Demo mode</string>
+    <string name="modo_demo_descricao">Load sample data. Your real data is kept safe and can be restored by turning this off.</string>
 </resources>

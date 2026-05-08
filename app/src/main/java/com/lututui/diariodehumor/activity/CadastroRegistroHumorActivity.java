@@ -32,7 +32,7 @@ import com.lututui.diariodehumor.RegistroDeHumor;
 import com.lututui.diariodehumor.Sentimento;
 import com.lututui.diariodehumor.Util;
 import com.lututui.diariodehumor.tags.Tag;
-import com.lututui.diariodehumor.tags.TagCrossRefRegistroDeHumor;
+import com.lututui.diariodehumor.tags.TagRegistroDeHumor;
 import com.lututui.diariodehumor.tags.TagsView;
 
 import java.util.ArrayList;
@@ -198,7 +198,7 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
             rgDao.update(rgHumor.getEntity());
             rgDao.removerCrossRef(rgHumor.getId());
         } else {
-            var novoId = db.getRegistroDeHumorDao().inserir(rgHumor.getEntity());
+            var novoId = rgDao.inserir(rgHumor.getEntity());
 
             rgHumor.setId(novoId);
         }
@@ -214,7 +214,7 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
 
             tag.setId(tagId);
 
-            rgDao.inserirCrossRef(new TagCrossRefRegistroDeHumor(rgHumor.getId(), tagId));
+            rgDao.inserirCrossRef(new TagRegistroDeHumor(rgHumor.getId(), tagId));
         }
 
         var intent = new Intent();

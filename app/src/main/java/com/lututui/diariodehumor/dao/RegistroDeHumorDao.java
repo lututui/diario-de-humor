@@ -9,7 +9,7 @@ import androidx.room.Update;
 
 import com.lututui.diariodehumor.RegistroDeHumor;
 import com.lututui.diariodehumor.RegistroDeHumorEntity;
-import com.lututui.diariodehumor.tags.TagCrossRefRegistroDeHumor;
+import com.lututui.diariodehumor.tags.TagRegistroDeHumor;
 
 import java.util.List;
 
@@ -20,9 +20,9 @@ public interface RegistroDeHumorDao {
     List<RegistroDeHumor> getRegistros();
 
     @Insert
-    void inserirCrossRef(TagCrossRefRegistroDeHumor crossRef);
+    void inserirCrossRef(TagRegistroDeHumor crossRef);
 
-    @Query("DELETE FROM TagCrossRefRegistroDeHumor WHERE registroId = :id")
+    @Query("DELETE FROM TagRegistroDeHumor WHERE registroId = :id")
     void removerCrossRef(long id);
 
     @Transaction
@@ -30,8 +30,11 @@ public interface RegistroDeHumorDao {
     RegistroDeHumor getRegistro(long id);
 
     @Update
-    int update(RegistroDeHumorEntity pessoa);
+    int update(RegistroDeHumorEntity registro);
 
     @Insert
     long inserir(RegistroDeHumorEntity registro);
+
+    @Delete
+    void delete(RegistroDeHumorEntity registro);
 }

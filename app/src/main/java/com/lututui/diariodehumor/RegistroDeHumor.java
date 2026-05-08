@@ -6,7 +6,7 @@ import androidx.room.Junction;
 import androidx.room.Relation;
 
 import com.lututui.diariodehumor.tags.Tag;
-import com.lututui.diariodehumor.tags.TagCrossRefRegistroDeHumor;
+import com.lututui.diariodehumor.tags.TagRegistroDeHumor;
 
 import java.util.Date;
 import java.util.List;
@@ -15,7 +15,7 @@ import java.util.Objects;
 public class RegistroDeHumor {
     @Embedded
     private final RegistroDeHumorEntity registroDeHumor;
-    @Relation(parentColumn = "id", entityColumn = "id", associateBy = @Junction(value = TagCrossRefRegistroDeHumor.class, parentColumn = "registroId", entityColumn = "tagId"))
+    @Relation(parentColumn = "id", entityColumn = "id", associateBy = @Junction(value = TagRegistroDeHumor.class, parentColumn = "registroId", entityColumn = "tagId"))
     private final List<Tag> tags;
 
     public RegistroDeHumor(
