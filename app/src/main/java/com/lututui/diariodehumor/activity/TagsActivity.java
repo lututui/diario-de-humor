@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.lututui.diariodehumor.DiarioHumorDB;
 import com.lututui.diariodehumor.R;
+import com.lututui.diariodehumor.Util;
 import com.lututui.diariodehumor.tags.TagsView;
 
 import java.util.ArrayList;
@@ -75,8 +76,15 @@ public class TagsActivity extends AppCompatActivity {
 
             launcherCadastroTag.launch(intent);
         } else if (id == R.id.opcao_tag_remover) {
-            DiarioHumorDB.getInstance(this).getTagDao().deletar(tag);
-            tagsWidget.removeTag(posSelection);
+            Util.Alert.confirmarExclusao(
+                    this,
+                    getString(R.string.confirmar_exclusao),
+                    getString(R.string.confirmar_exclusao_tag),
+                    (dialog, which) -> {
+                        DiarioHumorDB.getInstance(this).getTagDao().deletar(tag);
+                        tagsWidget.removeTag(posSelection);
+                    }
+            );
         } else {
             return super.onContextItemSelected(item);
         }

@@ -76,4 +76,7 @@
     <string name="tag_unset">Selecionar…</string>
     <string name="formato_data_locale">dd/MM/yyyy</string>
     <string name="usar_formato_data_idioma">Usar formato de data do idioma</string>
+    <string name="confirmar_exclusao">Confirmar exclusão</string>
+    <string name="confirmar_exclusao_registro">Tem certeza que quer deletar este registro? Esta ação não pode ser desfeita.</string>
+    <string name="confirmar_exclusao_tag">Tem certeza que quer deletar este fator? Esta ação não pode ser desfeita e todos os registros que usam este fator o perderão.</string>
 </resources>

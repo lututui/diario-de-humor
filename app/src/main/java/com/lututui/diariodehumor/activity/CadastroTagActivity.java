@@ -119,8 +119,7 @@ public class CadastroTagActivity extends AppCompatActivity {
             Util.Alert.mostrarAviso(
                     this,
                     getString(R.string.tag_sem_nome),
-                    getString(R.string.tag_sem_nome_erro),
-                    null
+                    getString(R.string.tag_sem_nome_erro)
             );
 
             return;
@@ -181,8 +180,7 @@ public class CadastroTagActivity extends AppCompatActivity {
         Util.Alert.mostrarAviso(
                 this,
                 getString(R.string.tag_existe_titulo),
-                getString(R.string.tag_existe_erro, nome),
-                null
+                getString(R.string.tag_existe_erro, nome)
         );
     }
 

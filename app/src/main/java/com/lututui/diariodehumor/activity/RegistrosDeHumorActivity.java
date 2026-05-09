@@ -46,6 +46,9 @@ public class RegistrosDeHumorActivity extends AppCompatActivity {
             new ActivityResultContracts.StartActivityForResult(),
             this::onTagsResult
     );
+    private final ActivityResultLauncher<Intent> launcherConfiguracoes = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+            this::onConfiguracoesResult
+    );
     private ActionMode actionMode;
     private ViewSelecionada selecionado;
     private final ActivityResultLauncher<Intent> launcherNovoRegistro = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
@@ -70,8 +73,15 @@ public class RegistrosDeHumorActivity extends AppCompatActivity {
             if (id == R.id.menu_listagem_item_editar) {
                 editarRegistroHumor();
             } else if (id == R.id.menu_listagem_item_excluir) {
-                excluirRegistroHumor();
-                mode.finish();
+                Util.Alert.confirmarExclusao(
+                        RegistrosDeHumorActivity.this,
+                        getString(R.string.confirmar_exclusao),
+                        getString(R.string.confirmar_exclusao_registro),
+                        (dialog, which) -> {
+                            excluirRegistroHumor();
+                            mode.finish();
+                        }
+                );
             } else {
                 return false;
             }
@@ -87,9 +97,6 @@ public class RegistrosDeHumorActivity extends AppCompatActivity {
             actionMode = null;
         }
     };
-    private final ActivityResultLauncher<Intent> launcherConfiguracoes = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
-            this::onConfiguracoesResult
-    );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

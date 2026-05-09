@@ -83,4 +83,7 @@
     <string name="tag_unset">Select…</string>
     <string name="formato_data_locale">MM/dd/yyyy</string>
     <string name="usar_formato_data_idioma">Use language date format</string>
+    <string name="confirmar_exclusao">Confirm deletion</string>
+    <string name="confirmar_exclusao_registro">Are you sure you want to delete this entry? This action cannot be undone.</string>
+    <string name="confirmar_exclusao_tag">Are you sure you want to delete this tag? This action cannot be undone and all entries that use this tag will have it removed.</string>
 </resources>

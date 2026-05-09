@@ -56,20 +56,30 @@ public class Util {
     }
 
     public static class Alert {
-        public static void mostrarAviso(
-                Context context,
-                String titulo,
-                String mensagem,
-                DialogInterface.OnClickListener listener
-        ) {
+        public static void mostrarAviso(Context context, String titulo, String mensagem) {
 
             var builder = new AlertDialog.Builder(context);
 
             builder.setTitle(titulo);
-            builder.setIcon(android.R.drawable.ic_dialog_info);
             builder.setMessage(mensagem);
 
-            builder.setNeutralButton(R.string.ok, listener);
+            builder.setNeutralButton(R.string.ok, null);
+
+            builder.create().show();
+        }
+
+        public static void confirmarExclusao(
+                Context context,
+                String titulo,
+                String mensagem,
+                DialogInterface.OnClickListener onConfirm
+        ) {
+            var builder = new AlertDialog.Builder(context);
+
+            builder.setTitle(titulo);
+            builder.setMessage(mensagem);
+            builder.setPositiveButton(R.string.excluir, onConfirm);
+            builder.setNegativeButton(R.string.cancelar, null);
 
             builder.create().show();
         }
