@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class TagsView extends ViewGroup implements View.OnClickListener, View.OnLongClickListener,
-        View.OnCreateContextMenuListener {
+public class TagsView extends ViewGroup
+        implements View.OnClickListener, View.OnCreateContextMenuListener {
     private final int espacamentoHorizontal;
     private final int espacamentoVertical;
 
@@ -30,7 +30,6 @@ public class TagsView extends ViewGroup implements View.OnClickListener, View.On
     private boolean adicionar = false;
     private boolean registrarMenu = false;
     private OnTagClickListener clickListener;
-    private OnTagLongClickListener longClickListener;
     private OnCreateContextMenuListener createContextMenuListener;
 
     public TagsView(Context context) {
@@ -72,10 +71,6 @@ public class TagsView extends ViewGroup implements View.OnClickListener, View.On
         this.clickListener = clickListener;
     }
 
-    public void setLongClickListener(OnTagLongClickListener longClickListener) {
-        this.longClickListener = longClickListener;
-    }
-
     public void setCreateContextMenuListener(OnCreateContextMenuListener createContextMenuListener) {
         this.createContextMenuListener = createContextMenuListener;
     }
@@ -87,7 +82,7 @@ public class TagsView extends ViewGroup implements View.OnClickListener, View.On
         if (clickListener == null) return;
         if (p == tags.size() && adicionar) p = Integer.MIN_VALUE;
 
-        clickListener.onTagClickListener(v, p);
+        clickListener.onTagClickListener(p);
     }
 
     public void addTag(Tag tag) {
@@ -230,16 +225,6 @@ public class TagsView extends ViewGroup implements View.OnClickListener, View.On
     }
 
     @Override
-    public boolean onLongClick(View v) {
-        var p = indexOfChild(v);
-
-        if (longClickListener == null) return false;
-        if (p == tags.size() && adicionar) return false;
-
-        return longClickListener.onTagLongClickListener(v, p);
-    }
-
-    @Override
     public void onCreateContextMenu(
             ContextMenu menu,
             View v,
@@ -250,7 +235,7 @@ public class TagsView extends ViewGroup implements View.OnClickListener, View.On
         if (createContextMenuListener == null) return;
         if (p == tags.size() && adicionar) return;
 
-        createContextMenuListener.onCreateContextMenuListener(v, menu, menuInfo, p);
+        createContextMenuListener.onCreateContextMenuListener(menu, p);
     }
 
     public Tag getTagAt(int pos) {
@@ -258,19 +243,10 @@ public class TagsView extends ViewGroup implements View.OnClickListener, View.On
     }
 
     public interface OnTagClickListener {
-        void onTagClickListener(View view, int position);
-    }
-
-    public interface OnTagLongClickListener {
-        boolean onTagLongClickListener(View view, int position);
+        void onTagClickListener(int position);
     }
 
     public interface OnCreateContextMenuListener {
-        void onCreateContextMenuListener(
-                View view,
-                ContextMenu menu,
-                ContextMenu.ContextMenuInfo menuInfo,
-                int position
-        );
+        void onCreateContextMenuListener(ContextMenu menu, int position);
     }
 }

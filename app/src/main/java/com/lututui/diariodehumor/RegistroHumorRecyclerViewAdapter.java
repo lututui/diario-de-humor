@@ -4,9 +4,7 @@ import static com.google.android.material.R.attr.colorPrimaryVariant;
 
 import android.content.Context;
 import android.util.TypedValue;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -22,26 +20,11 @@ public class RegistroHumorRecyclerViewAdapter
         extends RecyclerView.Adapter<RegistroHumorRecyclerViewAdapter.RegistroHumorHolder> {
     private final Context context;
     private final List<RegistroDeHumor> registros;
-    private OnItemClickListener onItemClickListener;
     private OnItemLongClickListener onItemLongClickListener;
-    private OnCreateContextMenu onCreateContextMenuListener;
-    private OnContextMenuClickListener onContextMenuClickListener;
 
     public RegistroHumorRecyclerViewAdapter(Context context, List<RegistroDeHumor> registros) {
         this.context = context;
         this.registros = registros;
-    }
-
-    public void setOnContextMenuClickListener(OnContextMenuClickListener onContextMenuClickListener) {
-        this.onContextMenuClickListener = onContextMenuClickListener;
-    }
-
-    public void setOnCreateContextMenuListener(OnCreateContextMenu onCreateContextMenuListener) {
-        this.onCreateContextMenuListener = onCreateContextMenuListener;
-    }
-
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
-        this.onItemClickListener = onItemClickListener;
     }
 
     public void setOnItemLongClickListener(OnItemLongClickListener onItemLongClickListener) {
@@ -110,31 +93,12 @@ public class RegistroHumorRecyclerViewAdapter
         return registros.size();
     }
 
-    public interface OnItemClickListener {
-        void onItemClick(View view, int position);
-    }
-
     public interface OnItemLongClickListener {
         boolean onItemLongClick(View view, int position);
     }
 
-    public interface OnCreateContextMenu {
-        void onCreateContextMenu(
-                View view,
-                ContextMenu menu,
-                ContextMenu.ContextMenuInfo menuInfo,
-                MenuItem.OnMenuItemClickListener onMenuItemClickListener,
-                int position
-        );
-    }
-
-    public interface OnContextMenuClickListener {
-        boolean onContextMenuClick(MenuItem menuItem, int position);
-    }
-
     public class RegistroHumorHolder extends RecyclerView.ViewHolder
-            implements View.OnClickListener, View.OnLongClickListener,
-            View.OnCreateContextMenuListener, MenuItem.OnMenuItemClickListener {
+            implements View.OnLongClickListener {
 
         private final TextView estrelaEsquerda;
         private final TextView estrelaDireita;
@@ -158,19 +122,7 @@ public class RegistroHumorRecyclerViewAdapter
             anotacao = itemView.findViewById(R.id.text_item_anotacao);
             tags = itemView.findViewById(R.id.tags_view);
 
-            itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
-            itemView.setOnCreateContextMenuListener(this);
-        }
-
-        @Override
-        public void onClick(View v) {
-            var p = getBindingAdapterPosition();
-
-            if (onItemClickListener == null || p == RecyclerView.NO_POSITION) return;
-
-            onItemClickListener.onItemClick(v, p);
-
         }
 
         @Override
@@ -180,31 +132,6 @@ public class RegistroHumorRecyclerViewAdapter
             if (onItemLongClickListener == null || p == RecyclerView.NO_POSITION) return false;
 
             return onItemLongClickListener.onItemLongClick(v, p);
-
-        }
-
-        @Override
-        public void onCreateContextMenu(
-                ContextMenu menu,
-                View v,
-                ContextMenu.ContextMenuInfo menuInfo
-        ) {
-            var p = getBindingAdapterPosition();
-
-            if (onCreateContextMenuListener == null || p == RecyclerView.NO_POSITION) return;
-
-            onCreateContextMenuListener.onCreateContextMenu(v, menu, menuInfo, this, p);
-        }
-
-        @Override
-        public boolean onMenuItemClick(@NonNull MenuItem item) {
-            var p = getBindingAdapterPosition();
-
-            if (onContextMenuClickListener == null || p == RecyclerView.NO_POSITION) {
-                return false;
-            }
-
-            return onContextMenuClickListener.onContextMenuClick(item, p);
 
         }
     }

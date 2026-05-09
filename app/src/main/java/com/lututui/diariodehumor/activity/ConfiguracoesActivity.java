@@ -24,20 +24,15 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ConfiguracoesActivity extends AppCompatActivity {
-    private Spinner esquemaCoresWidget;
-    private Spinner ordenacaoWidget;
-    private Spinner formatoDataWidget;
-    private CheckBox checkBoxWidget;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_configuracoes);
 
-        esquemaCoresWidget = findViewById(R.id.spinner_esquema_cores);
-        ordenacaoWidget = findViewById(R.id.spinner_ordenacao);
-        formatoDataWidget = findViewById(R.id.spinner_formato_data);
-        checkBoxWidget = findViewById(R.id.checkbox_demo);
+        var esquemaCoresWidget = (Spinner) findViewById(R.id.spinner_esquema_cores);
+        var ordenacaoWidget = (Spinner) findViewById(R.id.spinner_ordenacao);
+        var formatoDataWidget = (Spinner) findViewById(R.id.spinner_formato_data);
+        var checkBoxWidget = (CheckBox) findViewById(R.id.checkbox_demo);
 
         var sharedPref = getSharedPreferences(Util.SharedPreferences.FILE, MODE_PRIVATE);
 

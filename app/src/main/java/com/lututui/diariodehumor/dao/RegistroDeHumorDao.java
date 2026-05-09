@@ -30,7 +30,7 @@ public interface RegistroDeHumorDao {
     RegistroDeHumor getRegistro(long id);
 
     @Update
-    int update(RegistroDeHumorEntity registro);
+    void update(RegistroDeHumorEntity registro);
 
     @Insert
     long inserir(RegistroDeHumorEntity registro);

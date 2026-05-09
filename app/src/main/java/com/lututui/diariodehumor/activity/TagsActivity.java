@@ -37,9 +37,17 @@ public class TagsActivity extends AppCompatActivity {
 
         tagsWidget.setRegistrarMenu(true);
 
-        tagsWidget.setTags(tags, false, false);
+        tagsWidget.setTags(tags, true, false);
 
-        tagsWidget.setCreateContextMenuListener((v, menu, mInfo, p) -> {
+        tagsWidget.setClickListener(position -> {
+            if (position == Integer.MIN_VALUE) {
+                var intent = new Intent(this, CadastroTagActivity.class);
+
+                launcherCadastroTag.launch(intent);
+            }
+        });
+
+        tagsWidget.setCreateContextMenuListener((menu, p) -> {
             getMenuInflater().inflate(R.menu.opcoes_tags, menu);
             posSelection = p;
         });

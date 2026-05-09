@@ -22,10 +22,7 @@
     <string name="periodo_madrugada">Before Dawn</string>
     <string name="erro_sem_periodo">Select a time of day!</string>
     <string name="erro_sem_sentimento">Select your mood!</string>
-    <string name="momento_especial_q">Special moment?</string>
     <string name="cadastro_limpo">Entry cleared</string>
-    <string name="sim">Yes</string>
-    <string name="nao">No</string>
     <string name="data">Date</string>
     <string name="erro_data_invalida">Invalid date!</string>
     <string name="placeholder" translatable="false">placeholder</string>
@@ -61,16 +58,14 @@
     <string name="X">X</string>
     <string name="adicionar_icone">+</string>
     <string name="tags">Tags</string>
-    <string name="nova_tag">New Tag</string>
     <string name="r" translatable="false">R</string>
     <string name="g" translatable="false">G</string>
     <string name="b" translatable="false">B</string>
     <string name="tag_name">Tag name</string>
     <string name="tag_color">Tag color</string>
     <string name="cancelar">Cancel</string>
-    <string name="erro_ao_salvar">Failed to save.</string>
     <string name="adicionar_tag">Add tag</string>
-    <string name="ok">Ok</string>
+    <string name="ok">OK</string>
     <string name="tag_existe_titulo">Error: tag already exists.</string>
     <string name="tag_existe_erro">Tag %1$s already exists</string>
     <string name="tags_selecionadas">Selected Tags</string>

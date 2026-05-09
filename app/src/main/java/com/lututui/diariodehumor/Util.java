@@ -15,13 +15,10 @@ public class Util {
         DD_MM_YYYY("dd/MM/yyyy"), MM_DD_YYYY("MM/dd/yyyy"), YYYY_MM_DD("yyyy/MM/dd"), LOCALE(null);
 
 
-        private final String formatString;
         private SimpleDateFormat formatter;
 
         FormatoData(String formatString) {
-            this.formatString = formatString;
-
-            if (this.formatString != null) {
+            if (formatString != null) {
                 this.formatter = new SimpleDateFormat(formatString, Locale.ROOT);
             }
         }
@@ -47,10 +44,6 @@ public class Util {
             createFormatter(context);
 
             return formatter.format(data);
-        }
-
-        public String getFormatString() {
-            return formatString;
         }
     }
 

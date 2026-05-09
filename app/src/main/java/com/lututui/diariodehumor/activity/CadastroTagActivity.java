@@ -29,8 +29,6 @@ public class CadastroTagActivity extends AppCompatActivity {
     private SeekBar seekBWidget;
     private View previewWidget;
     private EditText nomeTagWidget;
-    private TextView labelTagWidget;
-    private Button adicionarWidget;
 
     private boolean editando;
     private Tag tagOriginal;
@@ -45,12 +43,13 @@ public class CadastroTagActivity extends AppCompatActivity {
         seekBWidget = findViewById(R.id.seekbar_b);
         previewWidget = findViewById(R.id.view_preview_cor);
         nomeTagWidget = findViewById(R.id.text_nome_tag);
-        labelTagWidget = findViewById(R.id.label_adicionar_tag);
-        adicionarWidget = findViewById(R.id.button_adicionar);
 
         editando = getIntent().getBooleanExtra(EDIT_KEY, false);
 
         if (editando) {
+            var labelTagWidget = (TextView) findViewById(R.id.label_adicionar_tag);
+            var adicionarWidget = (Button) findViewById(R.id.button_adicionar);
+
             labelTagWidget.setText(R.string.editar_tag);
             adicionarWidget.setText(R.string.editar_tag);
 

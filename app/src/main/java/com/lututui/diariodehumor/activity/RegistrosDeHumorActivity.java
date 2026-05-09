@@ -191,7 +191,7 @@ public class RegistrosDeHumorActivity extends AppCompatActivity {
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    public void onConfiguracoesResult(ActivityResult result) {
+    public void onConfiguracoesResult(ActivityResult ignored) {
         var sharedPref = getSharedPreferences(Util.SharedPreferences.FILE, MODE_PRIVATE);
 
         var sortMode = sharedPref.getInt(Util.SharedPreferences.SP_ORDEM, 0);
@@ -270,7 +270,7 @@ public class RegistrosDeHumorActivity extends AppCompatActivity {
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private void onTagsResult(ActivityResult result) {
+    private void onTagsResult(ActivityResult ignored) {
         registros.clear();
         registros.addAllSorted(DiarioHumorDB.getInstance(this).getRegistroDeHumorDao()
                                             .getRegistros());

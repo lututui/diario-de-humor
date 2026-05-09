@@ -18,9 +18,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -78,7 +75,7 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
 
         editando = getIntent().getBooleanExtra(MODO_KEY, false);
 
-        tagsWidget.setClickListener((view, position) -> {
+        tagsWidget.setClickListener((position) -> {
             if (position == Integer.MIN_VALUE) {
                 dialogSelecionarTags();
             } else {
@@ -116,7 +113,10 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
 
     private void setDataWidget() {
         var sharedPref = getSharedPreferences(Util.SharedPreferences.FILE, MODE_PRIVATE);
-        var modoData = Util.FormatoData.values()[sharedPref.getInt(Util.SharedPreferences.SP_DATA, 0)];
+        var modoData = Util.FormatoData.values()[sharedPref.getInt(
+                Util.SharedPreferences.SP_DATA,
+                0
+        )];
 
         dataWidget.setText(modoData.toString(this, calendar.getTime()));
     }
@@ -155,7 +155,10 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
                                  .orElse("");
 
         var sharedPref = getSharedPreferences(Util.SharedPreferences.FILE, MODE_PRIVATE);
-        var modoData = Util.FormatoData.values()[sharedPref.getInt(Util.SharedPreferences.SP_DATA, 0)];
+        var modoData = Util.FormatoData.values()[sharedPref.getInt(
+                Util.SharedPreferences.SP_DATA,
+                0
+        )];
         var data = modoData.toDate(this, dataString);
 
         if (data == null) {
@@ -327,7 +330,7 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
         });
 
         dialogTagsSelecionadas.setTags(new ArrayList<>(tagsWidget.getTags()), false, true);
-        dialogTagsSelecionadas.setClickListener((view1, position) -> {
+        dialogTagsSelecionadas.setClickListener((position) -> {
             var removido = dialogTagsSelecionadas.removeTag(position);
             tagsWidget.removeTag(position);
 
