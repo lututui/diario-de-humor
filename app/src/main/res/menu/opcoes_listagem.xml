@@ -10,7 +10,9 @@
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/menu_listagem_tags"
-        android:title="@string/editar_tags" />
+        android:icon="@drawable/tag"
+        android:title="@string/editar_tags"
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/menu_listagem_sobre"
         android:checkable="false"

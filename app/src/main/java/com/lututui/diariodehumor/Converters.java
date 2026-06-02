@@ -2,16 +2,20 @@ package com.lututui.diariodehumor;
 
 import androidx.room.TypeConverter;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class Converters {
     @TypeConverter
-    public static long dateToLong(Date date) {
-        return date == null ? 0 : date.getTime();
+    public static long localDateToLong(LocalDate data) {
+        if (data == null) {
+            return 0;
+        }
+
+        return data.toEpochDay();
     }
 
     @TypeConverter
-    public static Date longToDate(long timestamp) {
-        return new Date(timestamp);
+    public static LocalDate longToLocalDate(long epochDay) {
+        return LocalDate.ofEpochDay(epochDay);
     }
 }

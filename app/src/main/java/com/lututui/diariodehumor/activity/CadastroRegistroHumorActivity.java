@@ -33,6 +33,7 @@ import com.lututui.diariodehumor.tags.TagRegistroDeHumor;
 import com.lututui.diariodehumor.tags.TagSpinnerAdapter;
 import com.lututui.diariodehumor.tags.TagsView;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Optional;
@@ -50,8 +51,7 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
     private CheckBox momentoEspecialWidget;
     private TagsView tagsWidget;
     private AlertDialog selecionarTagsWidget;
-
-    private Calendar calendar;
+    private LocalDate data;
     private boolean editando;
     private RegistroDeHumor registroDeHumorOriginal;
 
@@ -64,7 +64,7 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cadastro_registro_humor);
 
-        calendar = Calendar.getInstance();
+        data = LocalDate.now();
 
         nomeMomentoWidget = findViewById(R.id.text_momento);
         anotacoesWidget = findViewById(R.id.text_anotacoes);
@@ -96,7 +96,6 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
 
         if (registroDeHumorOriginal != null) {
             nomeMomentoWidget.setText(registroDeHumorOriginal.getTitulo());
-            calendar.setTime(registroDeHumorOriginal.getData());
             periodoDiaWidget.setSelection(registroDeHumorOriginal.getPeriodoDia().ordinal() + 1);
             sentimentosWidget.check(sentimentosWidget.getChildAt(registroDeHumorOriginal.getSentimento()
                                                                                         .ordinal())
@@ -105,6 +104,8 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
             anotacoesWidget.setText(registroDeHumorOriginal.getAnotacoes());
 
             tagsWidget.setTags(new ArrayList<>(registroDeHumorOriginal.getTags()), true, true);
+
+            data = registroDeHumorOriginal.getData();
         } else {
             tagsWidget.setTags(new ArrayList<>(), true, true);
         }
@@ -119,7 +120,7 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
                 0
         )];
 
-        dataWidget.setText(modoData.toString(this, calendar.getTime()));
+        dataWidget.setText(modoData.toString(this, data));
     }
 
     public void salvar() {
@@ -163,19 +164,19 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
 
         if (dataString.isBlank()) {
             Toast.makeText(this, R.string.erro_data_invalida, Toast.LENGTH_LONG).show();
-            calendar = Calendar.getInstance();
+            data = LocalDate.now();
             setDataWidget();
             return;
         }
 
-        var data = modoData.toDate(this, dataString);
+        var dataParseada = modoData.toDate(this, dataString);
 
         var periodo = PeriodoDia.values()[periodoId - 1];
         var sentimento = Sentimento.values()[sentimentoId];
 
         var rgHumor = new RegistroDeHumor(
                 nomeMomento,
-                data,
+                dataParseada,
                 periodo,
                 sentimento,
                 momentoEspecial,
@@ -240,7 +241,7 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
 
         nomeMomentoWidget.requestFocus();
 
-        calendar = Calendar.getInstance();
+        data = LocalDate.now();
         setDataWidget();
 
         tagsWidget.setTags(new ArrayList<>(), true, true);
@@ -252,16 +253,16 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
         var dPickerDialog = new DatePickerDialog(
                 this,
                 (dp_view, year, month, dayOfMonth) -> {
-                    calendar.set(year, month, dayOfMonth);
+                    data = LocalDate.of(year, month + 1, dayOfMonth);
 
                     setDataWidget();
                 },
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)
+                data.getYear(),
+                data.getMonthValue() - 1,
+                data.getDayOfMonth()
         );
 
-        dPickerDialog.getDatePicker().setMaxDate(Calendar.getInstance().getTimeInMillis());
+        dPickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
         dPickerDialog.show();
     }
 

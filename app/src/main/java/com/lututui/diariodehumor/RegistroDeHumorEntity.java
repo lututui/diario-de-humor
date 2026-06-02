@@ -5,7 +5,7 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Objects;
 
 @Entity(tableName = "registro_de_humor")
@@ -15,7 +15,7 @@ public class RegistroDeHumorEntity {
     private final String titulo;
     @NonNull
     @ColumnInfo
-    private final Date data;
+    private final LocalDate data;
     @NonNull
     @ColumnInfo
     private final PeriodoDia periodoDia;
@@ -32,7 +32,7 @@ public class RegistroDeHumorEntity {
 
     public RegistroDeHumorEntity(
             @NonNull String titulo,
-            @NonNull Date data,
+            @NonNull LocalDate data,
             @NonNull PeriodoDia periodoDia,
             @NonNull Sentimento sentimento,
             boolean especial,
@@ -52,7 +52,7 @@ public class RegistroDeHumorEntity {
     }
 
     @NonNull
-    public Date getData() {
+    public LocalDate getData() {
         return data;
     }
 

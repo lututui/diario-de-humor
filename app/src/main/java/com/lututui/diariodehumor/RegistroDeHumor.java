@@ -8,7 +8,7 @@ import androidx.room.Relation;
 import com.lututui.diariodehumor.tags.Tag;
 import com.lututui.diariodehumor.tags.TagRegistroDeHumor;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -21,7 +21,7 @@ public class RegistroDeHumor {
 
     public RegistroDeHumor(
             @NonNull String titulo,
-            @NonNull Date data,
+            @NonNull LocalDate data,
             @NonNull PeriodoDia periodoDia,
             @NonNull Sentimento sentimento,
             boolean especial,
@@ -74,7 +74,7 @@ public class RegistroDeHumor {
         return registroDeHumor.getTitulo();
     }
 
-    public Date getData() {
+    public LocalDate getData() {
         return registroDeHumor.getData();
     }
 
