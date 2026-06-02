@@ -49,6 +49,7 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
     private RadioGroup sentimentosWidget;
     private CheckBox momentoEspecialWidget;
     private TagsView tagsWidget;
+    private AlertDialog selecionarTagsWidget;
 
     private Calendar calendar;
     private boolean editando;
@@ -159,14 +160,15 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
                 Util.SharedPreferences.SP_DATA,
                 0
         )];
-        var data = modoData.toDate(this, dataString);
 
-        if (data == null) {
+        if (dataString.isBlank()) {
             Toast.makeText(this, R.string.erro_data_invalida, Toast.LENGTH_LONG).show();
             calendar = Calendar.getInstance();
             setDataWidget();
             return;
         }
+
+        var data = modoData.toDate(this, dataString);
 
         var periodo = PeriodoDia.values()[periodoId - 1];
         var sentimento = Sentimento.values()[sentimentoId];
@@ -250,14 +252,13 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
         var dPickerDialog = new DatePickerDialog(
                 this,
                 (dp_view, year, month, dayOfMonth) -> {
-
                     calendar.set(year, month, dayOfMonth);
 
                     setDataWidget();
                 },
-                Calendar.getInstance().get(Calendar.YEAR),
-                Calendar.getInstance().get(Calendar.MONTH),
-                Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)
         );
 
         dPickerDialog.getDatePicker().setMaxDate(Calendar.getInstance().getTimeInMillis());
@@ -338,12 +339,23 @@ public class CadastroRegistroHumorActivity extends AppCompatActivity {
             spinnerAdapter.notifyDataSetChanged();
         });
 
-        new AlertDialog.Builder(this).setTitle(R.string.selecionar_tags).setView(view)
-                                     .setPositiveButton(R.string.ok, null)
-                                     .setOnDismissListener(d -> {
-                                         dialogTagsDisponiveis = null;
-                                         dialogTagsSelecionadas = null;
-                                     }).show();
+        selecionarTagsWidget = new AlertDialog.Builder(this).setTitle(R.string.selecionar_tags)
+                                                            .setView(view)
+                                                            .setPositiveButton(R.string.ok, null)
+                                                            .setOnDismissListener(d -> {
+                                                                dialogTagsDisponiveis = null;
+                                                                dialogTagsSelecionadas = null;
+                                                                selecionarTagsWidget = null;
+                                                            }).create();
+        selecionarTagsWidget.show();
+    }
 
+    @Override
+    protected void onDestroy() {
+        if (selecionarTagsWidget != null && selecionarTagsWidget.isShowing()) {
+            selecionarTagsWidget.dismiss();
+        }
+
+        super.onDestroy();
     }
 }

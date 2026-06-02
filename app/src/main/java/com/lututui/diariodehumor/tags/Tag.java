@@ -14,6 +14,7 @@ import java.util.Random;
 
 @Entity(indices = @Index(value = "nome", unique = true))
 public class Tag {
+    private static final Random RANDOM = new Random();
     @NonNull
     private final String nome;
     @ColumnInfo(index = true)
@@ -28,10 +29,8 @@ public class Tag {
 
     @Ignore
     public Tag(@NonNull String nome) {
-        var r = new Random();
-
         this.nome = nome;
-        this.cor = Color.rgb(r.nextInt(255), r.nextInt(255), r.nextInt(255));
+        this.cor = Color.rgb(RANDOM.nextInt(255), RANDOM.nextInt(255), RANDOM.nextInt(255));
     }
 
     @NonNull

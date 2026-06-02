@@ -42,6 +42,7 @@ public class RegistrosDeHumorActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RegistroHumorRecyclerViewAdapter recyclerViewAdapter;
     private SortedArrayList<RegistroDeHumor> registros;
+    private ActionMode actionMode;
     private final ActivityResultLauncher<Intent> launcherTags = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             this::onTagsResult
@@ -49,7 +50,6 @@ public class RegistrosDeHumorActivity extends AppCompatActivity {
     private final ActivityResultLauncher<Intent> launcherConfiguracoes = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
             this::onConfiguracoesResult
     );
-    private ActionMode actionMode;
     private ViewSelecionada selecionado;
     private final ActivityResultLauncher<Intent> launcherNovoRegistro = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
             this::onCadastroResult
@@ -91,7 +91,14 @@ public class RegistrosDeHumorActivity extends AppCompatActivity {
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
-            selecionado.getView().setBackground(selecionado.getBackground());
+            if (selecionado != null) {
+                int pos = registros.indexOf(selecionado.getRegistro());
+
+                if (pos != RecyclerView.NO_POSITION) {
+                    recyclerViewAdapter.notifyItemChanged(pos);
+                }
+            }
+
             recyclerView.setEnabled(true);
             selecionado = null;
             actionMode = null;
@@ -178,12 +185,16 @@ public class RegistrosDeHumorActivity extends AppCompatActivity {
         var editando = intent.getBooleanExtra(CadastroRegistroHumorActivity.MODO_KEY, false);
 
         if (editando) {
+            if (selecionado == null) return;
+
             registros.remove(selecionado.getPosicao());
         }
 
         var newPos = registros.addSorted(rgHumor);
 
         if (editando) {
+            if (selecionado == null) return;
+
             recyclerViewAdapter.notifyItemMoved(selecionado.getPosicao(), newPos);
             recyclerViewAdapter.notifyItemChanged(newPos);
 
@@ -199,6 +210,10 @@ public class RegistrosDeHumorActivity extends AppCompatActivity {
 
     @SuppressLint("NotifyDataSetChanged")
     public void onConfiguracoesResult(ActivityResult ignored) {
+        if (actionMode != null) {
+            actionMode.finish();
+        }
+
         var sharedPref = getSharedPreferences(Util.SharedPreferences.FILE, MODE_PRIVATE);
 
         var sortMode = sharedPref.getInt(Util.SharedPreferences.SP_ORDEM, 0);
@@ -230,6 +245,8 @@ public class RegistrosDeHumorActivity extends AppCompatActivity {
     }
 
     private void excluirRegistroHumor() {
+        if (selecionado == null) return;
+
         registros.remove(selecionado.getRegistro());
         recyclerViewAdapter.notifyItemRemoved(selecionado.getPosicao());
 
@@ -270,7 +287,7 @@ public class RegistrosDeHumorActivity extends AppCompatActivity {
         } else if (menuItemId == R.id.menu_listagem_tags) {
             abrirTags();
         } else {
-            return super.onContextItemSelected(item);
+            return super.onOptionsItemSelected(item);
         }
 
         return true;
@@ -278,6 +295,10 @@ public class RegistrosDeHumorActivity extends AppCompatActivity {
 
     @SuppressLint("NotifyDataSetChanged")
     private void onTagsResult(ActivityResult ignored) {
+        if (actionMode != null) {
+            actionMode.finish();
+        }
+
         registros.clear();
         registros.addAllSorted(DiarioHumorDB.getInstance(this).getRegistroDeHumorDao()
                                             .getRegistros());

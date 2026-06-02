@@ -9,6 +9,7 @@ import com.lututui.diariodehumor.tags.Tag;
 import com.lututui.diariodehumor.tags.TagRegistroDeHumor;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 
@@ -43,6 +44,14 @@ public class RegistroDeHumor {
         this.tags = tags;
     }
 
+    private static boolean tagsIguais(List<Tag> a, List<Tag> b) {
+        if (a == b) return true;
+        if (a == null || b == null) return false;
+        if (a.size() != b.size()) return false;
+
+        return new HashSet<>(a).equals(new HashSet<>(b));
+    }
+
     public List<Tag> getTags() {
         return tags;
     }
@@ -53,12 +62,12 @@ public class RegistroDeHumor {
 
         var that = (RegistroDeHumor) o;
         return Objects.equals(registroDeHumor, that.registroDeHumor) &&
-                Objects.equals(tags, that.tags);
+                tagsIguais(this.tags, that.tags);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(registroDeHumor, tags);
+        return Objects.hash(registroDeHumor, new HashSet<>(tags));
     }
 
     public String getTitulo() {

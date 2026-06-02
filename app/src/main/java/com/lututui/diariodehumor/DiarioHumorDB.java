@@ -27,6 +27,10 @@ public abstract class DiarioHumorDB extends RoomDatabase {
 
     public static void resetDemo(Context context) {
         synchronized (DiarioHumorDB.class) {
+            if (DEMO_INSTANCE != null && DEMO_INSTANCE.isOpen()) {
+                DEMO_INSTANCE.close();
+            }
+
             context.deleteDatabase(DB_DEMO_NAME);
 
             DEMO_INSTANCE = Room.databaseBuilder(context, DiarioHumorDB.class, DB_DEMO_NAME)
@@ -39,10 +43,30 @@ public abstract class DiarioHumorDB extends RoomDatabase {
         var demo = sharedPref.getBoolean(Util.SharedPreferences.SP_DEMO, false);
 
         if (demo) {
+            fecharLive();
             return getDemoInstance(context);
         }
 
+        fecharDemo();
         return getLiveInstance(context);
+    }
+
+    private static void fecharLive() {
+        synchronized (DiarioHumorDB.class) {
+            if (INSTANCE != null && INSTANCE.isOpen()) {
+                INSTANCE.close();
+                INSTANCE = null;
+            }
+        }
+    }
+
+    private static void fecharDemo() {
+        synchronized (DiarioHumorDB.class) {
+            if (DEMO_INSTANCE != null && DEMO_INSTANCE.isOpen()) {
+                DEMO_INSTANCE.close();
+                DEMO_INSTANCE = null;
+            }
+        }
     }
 
     private static DiarioHumorDB getLiveInstance(Context context) {
